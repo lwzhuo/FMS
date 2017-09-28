@@ -1,7 +1,7 @@
 #define _CRT_SECURE_NO_WARNINGS
 #include<stdio.h>
-#include"struct.h"
 #include<string.h>
+#include"struct.h"
 #include"public.h"
 #include"film.h"
 struct film * getFilmInfoByName(char * name, struct film *f)//通过名字查询

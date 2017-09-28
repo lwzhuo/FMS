@@ -30,15 +30,21 @@ void registration()
 void createvip(int id, char * username, char * password)
 {
 	char c;
-	FILE * f = fopen("vipuser", "ab+");
+	FILE * fa = fopen("vipuser", "ab+");
+	FILE * fb = fopen("vipinfo", "rb");
 	struct vip a;
-	a.id = id;
+	struct vipinfo b;
+	fread(&b, sizeof(struct vipinfo), 1, fb);
+	a.id = b.nextid;
 	strcpy(a.name, username);
 	strcpy(a.password, password);
 	a.balance = 0;//初始化账户余额及电影数
 	a.filmnum = 0;
-	fwrite(&a, sizeof(struct vip), 1, f);
-	fclose(f);
+	fwrite(&a, sizeof(struct vip), 1, fa);
+	fclose(fa);
+	fclose(fb);
+	fa = NULL;
+	fb = NULL;
 	printf("\n注册成功!返回(1)\n");
 	while (c = checkselect() != '1');
 	return;
@@ -135,4 +141,20 @@ void createadmin(int id, char * username, char * password)
 	strcpy(a.password, password);
 	fwrite(&a, sizeof(struct admin), 1, f);
 	fclose(f);
+}
+void changevipinfo(int newnum, int newid)//未测试
+{
+	struct vipinfo vf;
+	FILE * newfile = fopen("tempvipinfo", "wb");
+	FILE * oldfile = fopen("vipinfo", "wb");
+	fread(&vf, sizeof(struct vipinfo), 1, oldfile);
+	vf.num = newnum;
+	vf.nextid = newid;
+	fwrite(&vf, sizeof(struct vipinfo), 1, newfile);
+	fclose(oldfile);
+	fclose(oldfile);
+	oldfile = NULL;
+	newfile = NULL;
+	remove("vipinfo");
+	rename("tempvipinfo", "vipinfo");
 }

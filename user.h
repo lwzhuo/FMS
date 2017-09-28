@@ -2,9 +2,8 @@
 #define _USER_H
 void registration();
 void viplogin();
-void createvip(int id, char * username, char * password);
-void viplogin();
 void adminlogin();
-void createadmin(int id, char * username, char * password);
+void createvip(int id, char * username, char * password);//创建vip用户
+void createadmin(int id, char * username, char * password);//创建管理员用户
+void changevipinfo(int newnum, int newid);
 #endif // !_USER_H
-

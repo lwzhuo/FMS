@@ -1,3 +1,4 @@
+#include<stdio.h>
 char checkselect()
 {
 	char c = getchar();
