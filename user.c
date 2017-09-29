@@ -25,9 +25,9 @@ void registration()
 			break;
 		}
 	}
-	createvip(1, name, pass);
+	createvip(name, pass);
 }
-void createvip(int id, char * username, char * password)
+void createvip(char * username, char * password)
 {
 	char c;
 	FILE * fa = fopen("vipuser", "ab+");
@@ -38,13 +38,14 @@ void createvip(int id, char * username, char * password)
 	a.id = b.nextid;
 	strcpy(a.name, username);
 	strcpy(a.password, password);
-	a.balance = 0;//初始化账户余额及电影数
-	a.filmnum = 0;
+	a.balance = 0;//初始化账户余额
+	a.filmnum = 0;//初始化电影数
 	fwrite(&a, sizeof(struct vip), 1, fa);
 	fclose(fa);
 	fclose(fb);
 	fa = NULL;
 	fb = NULL;
+	changevipinfo(++b.num, ++b.nextid);//修改用户信息文件
 	printf("\n注册成功!返回(1)\n");
 	while (c = checkselect() != '1');
 	return;
@@ -144,17 +145,48 @@ void createadmin(int id, char * username, char * password)
 }
 void changevipinfo(int newnum, int newid)//未测试
 {
-	struct vipinfo vf;
+	struct vipinfo vi;
 	FILE * newfile = fopen("tempvipinfo", "wb");
-	FILE * oldfile = fopen("vipinfo", "wb");
-	fread(&vf, sizeof(struct vipinfo), 1, oldfile);
-	vf.num = newnum;
-	vf.nextid = newid;
-	fwrite(&vf, sizeof(struct vipinfo), 1, newfile);
+	FILE * oldfile = fopen("vipinfo", "rb");
+	fread(&vi, sizeof(struct vipinfo), 1, oldfile);
+	vi.num = newnum;
+	vi.nextid = newid;
+	fwrite(&vi, sizeof(struct vipinfo), 1, newfile);
 	fclose(oldfile);
-	fclose(oldfile);
+	fclose(newfile);
 	oldfile = NULL;
 	newfile = NULL;
 	remove("vipinfo");
 	rename("tempvipinfo", "vipinfo");
+}
+void viewvipinfo()
+{
+	FILE * f = fopen("vipinfo", "rb");
+	struct vipinfo vi;
+	fread(&vi, sizeof(struct vipinfo), 1, f);
+	printf("用户数量:%d\n用户信息单个大小:%d\n下一个用户id:%d\n",vi.num,vi.singlevipsize,vi.nextid);
+	fclose(f);
+	f = NULL;
+}
+void showUserlist()
+{
+	int i = 0;
+	FILE * f = fopen("vipuser", "rb");
+	FILE * f1 = fopen("vipinfo", "rb");
+	struct vipinfo vi;
+	struct vip v;
+	fread(&vi, sizeof(struct vipinfo), 1, f1);
+	printf("id     用户名      密码\n");
+	while (i<vi.num)
+	{
+		fseek(f, sizeof(struct vip)*i, SEEK_SET);
+		fread(&v, sizeof(struct vip), 1, f);
+		printf("%d %10s %10s\n", v.id, v.name, v.password);
+		i++;
+	}
+	fclose(f);
+	fclose(f1);
+	f = NULL;
+	f1 = NULL;
+	return;
 }

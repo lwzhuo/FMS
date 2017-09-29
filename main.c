@@ -11,6 +11,16 @@ int main()
 	//createadmin(1, "admin", "admin");//管理员帐户创建
 	//printf("%d %d\n", sizeof(struct vipinfo), sizeof(struct filminfo));
 	//init();//配置文件初始化
-	while (Homepage());
+	//struct vipinfo vinfo;
+	//vinfo.num = 0;
+	//vinfo.singlevipsize = 48;
+	//vinfo.nextid = 1;
+	//FILE *f2 = fopen("vipinfo", "wb");
+	//fwrite(&vinfo, sizeof(struct vipinfo), 1, f2);
+	//fclose(f2);
+	//printf("初始化完毕\n");//TODO完成检查
+	viewvipinfo();
+	//while (Homepage());
+	showUserlist();
 	return 0;
 }

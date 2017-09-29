@@ -23,7 +23,7 @@ void init()//配置文件，请勿外部调用！ 仅在初始化配置文件时调用
 	vinfo.singlevipsize = 48;
 	vinfo.nextid = 1;
 	FILE *f2 = fopen("vipinfo", "wb");
-	fwrite(&info, sizeof(struct vipinfo), 1, f2);
+	fwrite(&vinfo, sizeof(struct vipinfo), 1, f2);
 	fclose(f2);
 	printf("初始化完毕\n");//TODO完成检查
 }
