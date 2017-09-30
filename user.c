@@ -55,9 +55,6 @@ void viplogin()
 	struct vip a;
 	char name[20], pass[16], c;
 	int id = 1, i = 0, flag = 1;
-	FILE *f = fopen("vipuser", "rb");
-	fread(&a, sizeof(struct admin), 1, f);
-	fclose(f);
 	while (flag)
 	{
 		system("cls");
@@ -77,25 +74,36 @@ void viplogin()
 				break;
 			}
 		}
-		if (strcmp(a.name, name) == 0 && strcmp(a.password, pass) == 0)
+		searchVipByName(name, &a);
+		if (&a == NULL)
 		{
-			printf("\n登录成功,欢迎%s %s\n", a.name, a.password);//TODO
-			USERTYPE = 1;
-			flag = 0;
-			printf("\n登录成功!返回(1)\n");
-			while (c = checkselect() != '1');
-			return;
+			printf("无此用户!\n");
+			back();
 		}
 		else
 		{
-			printf("\n用户名或密码错误,请重试!%s %s %s %s\n", a.name, a.password, name, pass);//TODO
-			if (flag++ == 3)//三次登录机会
+			if (strcmp(a.name, name) == 0 && strcmp(a.password, pass) == 0)
 			{
-				printf("用户名或密码错误三次!返回(1)\n");
+				printf("\n登录成功,欢迎%s %s\n", a.name, a.password);//TODO
+				USERTYPE = 1;
+				flag = 0;
+				printf("\n登录成功!返回(1)\n");
 				while (c = checkselect() != '1');
 				return;
 			}
+			else
+			{
+				printf("\n用户名或密码错误,请重试!%s %s %s %s\n", a.name, a.password, name, pass);//TODO
+				back();
+				if (flag++ == 3)//三次登录机会
+				{
+					printf("用户名或密码错误三次!返回(1)\n");
+					while (c = checkselect() != '1');
+					return;
+				}
+			}
 		}
+			
 	}
 }
 void adminlogin()
@@ -189,4 +197,26 @@ void showUserlist()
 	f = NULL;
 	f1 = NULL;
 	return;
+}
+void searchVipByName(char * name,struct vip * a)
+{
+	int i;
+	FILE * f1 = fopen("vipuser", "rb");
+	FILE * f2 = fopen("vipinfo", "rb");
+	struct vipinfo vi;
+	fread(&vi, sizeof(struct vipinfo), 1, f2);
+	for (i = 0; i < vi.num; i++)
+	{
+		fseek(f1, sizeof(struct vip)*i, SEEK_SET);
+		fread(a, sizeof(struct vip), 1, f1);
+		if (!strcmp(a->name, name))
+		{
+			fclose(f1);
+			fclose(f2);
+			return;
+		}
+	}
+	fclose(f1);
+	fclose(f2);
+	a = NULL;//未成功获得相应用户 TODO
 }

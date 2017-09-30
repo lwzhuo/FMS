@@ -19,8 +19,8 @@ int main()
 	//fwrite(&vinfo, sizeof(struct vipinfo), 1, f2);
 	//fclose(f2);
 	//printf("初始化完毕\n");//TODO完成检查
-	viewvipinfo();
-	//while (Homepage());
-	showUserlist();
+	//viewvipinfo();//查看vip用户信息文件内容
+	while (Homepage());
+	//showUserlist();//显示用户列表
 	return 0;
 }
