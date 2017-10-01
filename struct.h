@@ -32,13 +32,25 @@ struct vipinfo {//标示电影数据存储文件的信息 size12
 	int singlevipsize;
 	int nextid;
 };
+struct filmborrow {//标示影片租借信息 size8
+	int film_id;//id -1 代表影片已下架
+	int borrow_time;// 时间 -1 代表已归还
+};
+typedef struct cart *cartptr;
+typedef struct cart cartnode;
+struct cart {
+	struct filmborrow * fb;
+	cartptr next;
+};
 struct admin//size 40
 {
 	int id;
 	char name[20];
 	char password[16];
 };
+
 struct vip v;
 struct film f;//全局变量 程序运行即加载进内存 作为程序运行时通物
+struct cart *head;
 #endif // !_STRUCT_H
 

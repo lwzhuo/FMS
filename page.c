@@ -1,11 +1,12 @@
 #define _CRT_SECURE_NO_WARNINGS
 #include<stdio.h>
-#include"check.h"
+#include"util.h"
 #include"struct.h"
 #include"user.h"
 #include"page.h"
 #include"film.h"
 #include"public.h"
+#include<stdlib.h>
 extern USERTYPE;
 void init()//配置文件，请勿外部调用！ 仅在初始化配置文件时调用
 {
@@ -105,9 +106,11 @@ void filmpage()
 		char name[30];
 		printf("请输入影片名:");
 		scanf("%s", name);
-		struct film f;
 		if (getFilmInfoByName(name, &f) == NULL)
+		{
 			printf("未找到相应影片!\n");
+			back();
+		}
 		else
 			borrowpage(f);
 		break;
@@ -135,7 +138,16 @@ void borrowpage(struct film f)
 	switch (c)
 	{
 	case '1':
-		break;//TODO
+	{
+		struct filmborrow fb;//构造并组装购物车
+		fb.borrow_time = Get_time();
+		fb.film_id = f.id;
+		addfilm(head, &fb);
+		printf("添加成功!");//TODO判断添加成功
+		showcart(head);
+		back();
+		break;
+	}
 	case '2':
 		return;
 	}
@@ -145,6 +157,8 @@ void Loginpage()
 	int c;
 	while (1)
 	{
+		if (USERTYPE)//如果已经登录 则不显示以下菜单
+			return;
 		system("cls");
 		printf("1.管理员登录\n");
 		printf("2.vip登录\n");
