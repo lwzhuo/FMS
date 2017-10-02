@@ -57,19 +57,20 @@ void addfilm(struct cart *head, struct filmborrow *b)
 	head->next = temp;
 	temp->next = p;
 }
-void showcart(struct cart *head)
+int showcart(struct cart *head)
 {
 	cartptr p = head;
 	if (p->next == NULL)
 	{
 		printf("购物车空\n");
-		return;
+		return 0;
 	}
 	p = p->next;
 	while (p)
 	{
-		printf("%d    %d\n", p->fb->film_id, p->fb->borrow_time);
+		printf("%d    %s\n", p->fb->film_id, getFilmNameByid(p->fb->film_id));
 		p = p->next;
 	}
+	return 1;
 }
 /*购物车模块代码结束*/

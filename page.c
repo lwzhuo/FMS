@@ -39,7 +39,7 @@ int Homepage()
 		if (USERTYPE)
 		{
 			printf("影片查询(1)\n");
-			printf("退出登录(2)\n");
+			printf("个人主页(2)\n");
 		}
 		else
 		{
@@ -70,8 +70,7 @@ int Homepage()
 	{
 		if (USERTYPE)
 		{
-			USERTYPE = 0;//退出登录
-			return 1;
+			vippage();//TODO 返回路径
 		}
 		else
 		{
@@ -130,7 +129,7 @@ void borrowpage(struct film f)
 	{
 		system("cls");
 		printFilminfo(f);
-		printf("\n借阅(1)   返回(2)\n");
+		printf("\n加入购物车(1)   返回(2)\n");
 		c = checkselect();
 		if (c == '1' || c == '2')
 			break;
@@ -140,9 +139,9 @@ void borrowpage(struct film f)
 	case '1':
 	{
 		struct filmborrow fb;//构造并组装购物车
-		fb.borrow_time = Get_time();
+		fb.borrow_time = Get_time();//获得租借时间
 		fb.film_id = f.id;
-		addfilm(head, &fb);
+		addfilm(head, &fb);//加入购物车
 		printf("添加成功!");//TODO判断添加成功
 		showcart(head);
 		back();
@@ -410,5 +409,38 @@ void adminfilmoperatepage()
 				return;//退出此页面
 			}
 		}
+	}
+}
+void vippage()
+{
+	char c;
+	while (1)
+	{
+		system("cls");
+		printf("购物车(1)  我的借阅信息(2) 退出登录(3) 返回(q)");
+		c = checkselect();
+		if (c >= '1'&&c <= '3' || c == 'q')
+			break;
+	}
+	switch (c)
+	{
+	case '1':
+	{
+		if (showcart(head))//TODO
+		{
+			borrowfilm(head,v.id);
+		}
+		back();
+		break;
+	}
+	case '2':
+		return;
+	case '3':
+	{
+		USERTYPE = 0;
+		return;
+	}
+	case 'q':
+		return;
 	}
 }

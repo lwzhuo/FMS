@@ -11,5 +11,6 @@ void init();//初始化配置文件
 void adminfilmshowpage();//管理员电影显示页面
 void adminfilmsearchpage();//管理员电影查找页面
 void adminfilmoperatepage();//管理员影片操作
+void vippage();
 #endif // !_PAGE_H
 

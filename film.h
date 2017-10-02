@@ -12,6 +12,8 @@ void showFilmList(int start, int end);
 void changeFilmLeftNum(char * name, int newnum);
 void changeFilmPrice(char * name, float newprice);
 void changeFilmSumInFilminfo(int newnum, int newnextid);
+char * getFilmNameByid(int id);
+void borrowfilm(struct cart * head, int id);
 int getFilmSumFromFilminfo();
 int getFilmIdByName(char *name);
 int getIdflagFromFilminfo();
