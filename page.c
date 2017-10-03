@@ -30,63 +30,63 @@ void init()//配置文件，请勿外部调用！ 仅在初始化配置文件时调用
 }
 int Homepage()
 {
-	int c;
-	/*菜单展示及输入筛选开始*/
+	int s;
 	while (1)
 	{
 		system("cls");
-		/*根据用户是否登录显示不同选项*/
-		if (USERTYPE)
-		{
-			printf("影片查询(1)\n");
-			printf("个人主页(2)\n");
-		}
-		else
-		{
-			printf("注册(1)\n");
-			printf("登录(2)\n");
-		}
+		printf("注册(1)\n");
+		printf("登录(2)\n");
 		printf("退出系统(q)\n");
-		c = checkselect();
-		if (c == '1' || c == '2' || c == 'q')//筛选输入
+		s = select();
+		if (checkselect(s, "12q"))
+		{
+			switch (s)
+			{
+			case '1':
+				registrationpage();
+				break;
+			case '2':
+				loginpage();
+				break;
+			case 'q':
+				return 0;
+			default:
+				break;
+			}
+		}
+	}
+	return 0;
+}
+void registrationpage()
+{
+	system("cls");
+	char name[20], pass[16], c;
+	int id = 1, i = 0;
+	printf("请输入用户名__________\b\b\b\b\b\b\b\b\b\b");
+	gets(name);
+	printf("请输入密码__________\b\b\b\b\b\b\b\b\b\b");
+	while (c = _getch())//用户密码输入
+	{
+		if (c != 13)
+		{
+			putchar('*');
+			pass[i++] = c;
+		}
+		else
+		{
+			pass[i] = '\0';
 			break;
-	}
-	/*菜单展示及输入筛选结束*/
-	/*输入判断开始*/
-	if (c == '1')
-	{
-		if (USERTYPE)
-		{
-			filmpage();//影片查询页面
-			return 1;
-		}
-		else
-		{
-			registration();//用户注册页面
-			return 1;
 		}
 	}
-	else if (c == '2')
-	{
-		if (USERTYPE)
-		{
-			vippage();//TODO 返回路径
-		}
-		else
-		{
-			Loginpage();//登录页面
-			return 1;
-		}
-	}
-	else if (c == 'q')
-		return 0;
+	if (registration(name, pass))
+		printf("\n注册成功\n");
 	else
-		return 0;
-	/*输入判断结束*/
+		printf("\n用户名已被使用,注册失败\n");
+	back();
 }
 void filmpage()
 {
-	int c;
+	int s;
 	while (1)
 	{
 		system("cls");
@@ -94,18 +94,18 @@ void filmpage()
 		printf("通过国家查找(2)\n");
 		printf("通过影片类型查找(3)\n");
 		printf("返回(q)\n");
-		c = checkselect();
-		if ((c >= '1' && c <= '3') || c == 'q')
+		s = select();
+		if (checkselect(s,"123q"))
 			break;
 	}
-	switch (c)
+	switch (s)
 	{
 	case '1':
 	{
 		char name[30];
 		printf("请输入影片名:");
 		scanf("%s", name);
-		if (getFilmInfoByName(name, &f) == NULL)
+		if (getFilmByName(name, &f) == NULL)
 		{
 			printf("未找到相应影片!\n");
 			back();
@@ -130,7 +130,7 @@ void borrowpage(struct film f)
 		system("cls");
 		printFilminfo(f);
 		printf("\n加入购物车(1)   返回(2)\n");
-		c = checkselect();
+		c = select();
 		if (c == '1' || c == '2')
 			break;
 	}
@@ -138,11 +138,12 @@ void borrowpage(struct film f)
 	{
 	case '1':
 	{
+		system("cls");
 		struct filmborrow fb;//构造并组装购物车
 		fb.borrow_time = Get_time();//获得租借时间
 		fb.film_id = f.id;
 		addfilm(head, &fb);//加入购物车
-		printf("添加成功!");//TODO判断添加成功
+		printf("添加成功!\n当前购物车有以下影片\n");//TODO判断添加成功
 		showcart(head);
 		back();
 		break;
@@ -151,9 +152,9 @@ void borrowpage(struct film f)
 		return;
 	}
 }
-void Loginpage()
+void loginpage()
 {
-	int c;
+	int s;
 	while (1)
 	{
 		if (USERTYPE)//如果已经登录 则不显示以下菜单
@@ -161,19 +162,23 @@ void Loginpage()
 		system("cls");
 		printf("1.管理员登录\n");
 		printf("2.vip登录\n");
-		printf("3.返回\n");
-		c = checkselect();
-		if (c == '1' || c == '2' || c == '3')
+		printf("q.返回\n");
+		s = select();
+		if (checkselect(s,"12q"))
 		{
-			if (c == '1')
+			if (s == '1')
 			{
 				adminlogin();
-				if (USERTYPE == 2)//检查是否以管理员身份已经登录
+				if (USERTYPE == 2)//检查是否以管理员身份登录
 					adminpage();
 			}
-			if (c == '2')
+			if (s == '2')
+			{
 				viplogin();
-			if (c == '3')
+				if(USERTYPE==1)//检查是否以vip身份登录
+					vippage();
+			}
+			if (s == 'q')
 				return ;
 		}
 	}
@@ -187,7 +192,7 @@ void adminpage()//退回上一级例子
 		printf("影片管理(1)\n");
 		printf("用户管理(2)\n");
 		printf("返回(q)\n");
-		c = checkselect();
+		c = select();
 		if (c == '1' || c == '2' || c == 'q')
 		{
 			switch (c)
@@ -214,7 +219,7 @@ void adminpage_film()
 		printf("影片查找(2)\n");
 		printf("显示影片列表(3)\n");
 		printf("返回(q)\n");
-		c = checkselect();
+		c = select();
 		if ((c >='1'&&c<='3')|| c == 'q')
 		{
 			switch (c)
@@ -261,7 +266,7 @@ void adminfilmshowpage()//影片显示页面
 		printf("显示所有影片(1)\n");
 		printf("显示特定区间影片(2)\n");
 		printf("返回(q)\n");
-		c = checkselect();
+		c = select();
 		if (c == '1' || c == '2' || c == 'q')
 		{
 			switch (c)
@@ -274,7 +279,7 @@ void adminfilmshowpage()//影片显示页面
 				printf("\n返回(q)");
 				while (1)
 				{
-					c = checkselect();
+					c = select();
 					if (c == 'q')
 						break;
 				}
@@ -289,7 +294,7 @@ void adminfilmshowpage()//影片显示页面
 				printf("\n返回(q)");//TODO无法返回
 				while (1)
 				{
-					c = checkselect();
+					c = select();
 					if (c == 'q')
 						break;
 				}
@@ -316,7 +321,7 @@ void adminfilmsearchpage()//TODO
 		printf("通过类型查找(3)\n");
 		printf("通过年份查找(4)\n");
 		printf("返回(q)\n");
-		c = checkselect();
+		c = select();
 		if ((c >= '1' && c <= '4') || c == 'q')
 		{
 			switch (c)
@@ -326,7 +331,7 @@ void adminfilmsearchpage()//TODO
 				char name[30];
 				printf("请输入影片名:");
 				scanf("%s", name);
-				if (NULL == getFilmInfoByName(name, &f))
+				if (NULL == getFilmByName(name, &f))
 					printf("无此影片\n");
 				else
 				{
@@ -335,7 +340,7 @@ void adminfilmsearchpage()//TODO
 				//printf("\n返回(q)");//TODO 返回流程修改
 				//while (1)
 				//{
-				//	c = checkselect();
+				//	c = select();
 				//	if (c == 'q')
 				//		break;
 				//}
@@ -369,7 +374,7 @@ void adminfilmoperatepage()
 		printf("  修改电影余量(3)");
 		printf("  修改电影总量(4)");
 		printf("  返回(q)\n");
-		c = checkselect();
+		c = select();
 		if ((c >= '1' && c <= '4') || c == 'q')
 		{
 			switch (c)
@@ -411,36 +416,44 @@ void adminfilmoperatepage()
 		}
 	}
 }
-void vippage()
+void vippage()//页面构建范例
 {
-	char c;
+	char s;
 	while (1)
 	{
 		system("cls");
-		printf("购物车(1)  我的借阅信息(2) 退出登录(3) 返回(q)");
-		c = checkselect();
-		if (c >= '1'&&c <= '3' || c == 'q')
-			break;
-	}
-	switch (c)
-	{
-	case '1':
-	{
-		if (showcart(head))//TODO
+		printf("影片借阅(1)  影片归还(2) 我的购物车(3) 个人中心(4) 退出登录(q)");
+		s = select();
+		if (!checkselect(s,"1234q"))
+			continue;
+		switch (s)
 		{
-			borrowfilm(head,v.id);
+		case '1':
+		{
+			filmpage();
+			break;
 		}
-		back();
-		break;
-	}
-	case '2':
-		return;
-	case '3':
-	{
-		USERTYPE = 0;
-		return;
-	}
-	case 'q':
-		return;
+		case '2':
+			break;
+		case '3':
+		{
+			printf("当前购物车有以下影片\n");
+			showcart(head);
+			printf("全部借阅(1)\n");//TODO按键
+			borrowfilm(head, v.id);
+			//clearcart(head);
+			break;
+		}
+		case '4':
+			printf("个人信息: 用户名      余额\n");
+			printf("%s  %d\n", v.name, v.balance);
+			printf("借阅信息:\n");
+			showvipfilm(v.id);
+			back();
+			break;
+		case 'q':
+			USERTYPE = 0;
+			return;
+		}
 	}
 }
