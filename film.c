@@ -271,9 +271,9 @@ void borrowfilm(struct cart * head,int uid)
 				p = p->next;
 			}
 			flag += i;//游标后移
+			tempv.filmnum += i;//个人借阅数增加
 		}
 		fseek(tempf1, sizeof(struct vip)*j, SEEK_SET);
-		tempv.filmnum += i;//个人借阅数增加
 		fwrite(&tempv, sizeof(struct vip), 1, tempf1);//写入单个用户信息
 	}
 	fclose(f); f = NULL;
