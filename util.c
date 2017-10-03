@@ -4,11 +4,18 @@
 #include"struct.h"
 #include"stdlib.h"
 #include"film.h"
-char checkselect()
+char select()
 {
 	char c = getchar();
 	while (getchar() != '\n');
 	return c;
+}
+int checkselect(int select, char * str)//检查输入是否在所给选项内
+{
+	for (int i = 0; i < strlen(str); i++)
+		if (str[i] == select)
+			return 1;
+	return 0;
 }
 void back()
 {
@@ -16,11 +23,10 @@ void back()
 	printf("\n返回(q)");//TODO无法返回
 	while (1)
 	{
-		c = checkselect();
+		c = select();
 		if (c == 'q')
-			break;
+			return;
 	}
-	return;
 }
 int Get_time()
 {
@@ -57,7 +63,7 @@ void addfilm(struct cart *head, struct filmborrow *b)
 	head->next = temp;
 	temp->next = p;
 }
-int showcart(struct cart *head)
+int showcart(struct cart * head)
 {
 	cartptr p = head;
 	if (p->next == NULL)
@@ -65,6 +71,7 @@ int showcart(struct cart *head)
 		printf("购物车空\n");
 		return 0;
 	}
+	printf("影片id   影片名字\n");
 	p = p->next;
 	while (p)
 	{
@@ -72,5 +79,14 @@ int showcart(struct cart *head)
 		p = p->next;
 	}
 	return 1;
+}
+void clearcart(struct cart * head)
+{
+	struct cart * p = head;
+	while (p)
+	{
+		p = p->next;
+		free(p);
+	}
 }
 /*购物车模块代码结束*/

@@ -1,35 +1,25 @@
 #define _CRT_SECURE_NO_WARNINGS
 #include<stdio.h>
 #include<string.h>
+#include<stdlib.h>
 #include"struct.h"
-#include"check.h"
+#include"util.h"
 #include"user.h"
+#include"film.h"
+
 extern USERTYPE;
-void registration()
+int registration(char * name,char * pass)
 {
-	char name[20], pass[16], c;
-	int id = 1, i = 0;
-	printf("请输入用户名__________\b\b\b\b\b\b\b\b\b\b");
-	gets(name);
-	printf("请输入密码__________\b\b\b\b\b\b\b\b\b\b");
-	while (c = _getch())//用户密码输入
+	if (searchVipByName(name, &v))
+		return 0;//用户名已被注册
+	else
 	{
-		if (c != 13)
-		{
-			putchar('*');
-			pass[i++] = c;
-		}
-		else
-		{
-			pass[i] = '\0';
-			break;
-		}
-	}
-	createvip(name, pass);
+		createvip(name, pass);
+		return 1;
+	}	
 }
 void createvip(char * username, char * password)
 {
-	char c;
 	FILE * fa = fopen("vipuser", "ab+");
 	FILE * fb = fopen("vipinfo", "rb");
 	struct vip a;
@@ -46,17 +36,15 @@ void createvip(char * username, char * password)
 	fa = NULL;
 	fb = NULL;
 	changevipinfo(++b.num, ++b.nextid);//修改用户信息文件
-	printf("\n注册成功!返回(1)\n");
-	while (c = checkselect() != '1');
 	return;
 }
 void viplogin()
 {
-	struct vip a;
-	char name[20], pass[16], c;
-	int id = 1, i = 0, flag = 1;
+	int flag = 1;
 	while (flag)
 	{
+		int i = 0;
+		char name[20], pass[16], c;
 		system("cls");
 		printf("请输入用户名__________\b\b\b\b\b\b\b\b\b\b");
 		gets(name);
@@ -74,36 +62,29 @@ void viplogin()
 				break;
 			}
 		}
-		searchVipByName(name, &a);
-		if (&a == NULL)
+		if(searchVipByName(name, &v))
 		{
-			printf("无此用户!\n");
-			back();
-		}
-		else
-		{
-			if (strcmp(a.name, name) == 0 && strcmp(a.password, pass) == 0)
+			if (strcmp(v.name, name) == 0 && strcmp(v.password, pass) == 0)
 			{
-				printf("\n登录成功,欢迎%s %s\n", a.name, a.password);//TODO
+				printf("\n登录成功,欢迎%s\n", v.name);
 				USERTYPE = 1;
 				flag = 0;
-				printf("\n登录成功!返回(1)\n");
-				while (c = checkselect() != '1');
+				head = cartinit(head);//登录成功后初始化购物车
+				back();
 				return;
 			}
 			else
 			{
-				printf("\n用户名或密码错误,请重试!%s %s %s %s\n", a.name, a.password, name, pass);//TODO
+				printf("\n用户名或密码错误,请重试!%s %s %s %s\n", v.name, v.password, name, pass);//TODO
 				back();
 				if (flag++ == 3)//三次登录机会
 				{
 					printf("用户名或密码错误三次!返回(1)\n");
-					while (c = checkselect() != '1');
+					while (c = select() != '1');
 					return;
 				}
 			}
 		}
-			
 	}
 }
 void adminlogin()
@@ -138,7 +119,7 @@ void adminlogin()
 	else
 		printf("登录失败!\n");
 	printf("返回(1)\n");
-	while (c = checkselect() != '1');
+	while (c = select() != '1');
 	return;
 }
 void createadmin(int id, char * username, char * password)
@@ -151,7 +132,7 @@ void createadmin(int id, char * username, char * password)
 	fwrite(&a, sizeof(struct admin), 1, f);
 	fclose(f);
 }
-void changevipinfo(int newnum, int newid)//未测试
+void changevipinfo(int newnum, int newid)//修改用户信息文件
 {
 	struct vipinfo vi;
 	FILE * newfile = fopen("tempvipinfo", "wb");
@@ -198,7 +179,7 @@ void showUserlist()
 	f1 = NULL;
 	return;
 }
-void searchVipByName(char * name,struct vip * a)
+int searchVipByName(char * name,struct vip * a)
 {
 	int i;
 	FILE * f1 = fopen("vipuser", "rb");
@@ -213,10 +194,38 @@ void searchVipByName(char * name,struct vip * a)
 		{
 			fclose(f1);
 			fclose(f2);
-			return;
+			return 1;
 		}
 	}
 	fclose(f1);
 	fclose(f2);
-	a = NULL;//未成功获得相应用户 TODO
+	return 0;//未找到相应用户
+}
+showvipfilm(int uid)
+{
+	FILE * f = fopen("borrowfilm", "rb");
+	FILE * f1 = fopen("vipuser", "rb");
+	FILE * f2 = fopen("vipinfo", "rb");
+	struct vipinfo vi;
+	struct filmborrow fb;
+	struct vip tempvip;
+	fread(&vi, sizeof(struct vipinfo), 1, f2);
+	fclose(f2); f2 = NULL;
+	int vipnum = vi.num, flag = 0, i;//i用户数量 flag游标
+	for (int j = 0; j < vipnum; j++)
+	{
+		fseek(f1, sizeof(struct vip)*j,SEEK_SET);
+		fread(&tempvip, sizeof(struct vip), 1, f1);
+		if (tempvip.id == uid)
+			break;
+		flag += tempvip.filmnum;
+	}
+	for (int j = 0; j < tempvip.filmnum; j++)
+	{
+		fseek(f, sizeof(struct filmborrow)*(flag + j), SEEK_SET);
+		fread(&fb, sizeof(struct filmborrow), 1, f);
+		printf("%s %d\n", getFilmNameByid(fb.film_id), fb.borrow_time);
+	}
+	fclose(f);
+	fclose(f1);
 }

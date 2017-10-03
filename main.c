@@ -4,12 +4,13 @@
 #include"page.h"
 #include"user.h"//ceshi
 #include"film.h"//ceshi
+#include"util.h"//ceshi
 int USERTYPE = 0;//0 未登录 1 vip 2 管理员
 
 int main()
 {
 	//createadmin(1, "admin", "admin");//管理员帐户创建
-	//printf("%d %d\n", sizeof(struct vipinfo), sizeof(struct filminfo));
+	//printf("%d %d %d\n", sizeof(struct vipinfo), sizeof(struct filminfo),sizeof(struct filmborrow));
 	//init();//配置文件初始化
 	//struct vipinfo vinfo;
 	//vinfo.num = 0;
@@ -22,5 +23,8 @@ int main()
 	//viewvipinfo();//查看vip用户信息文件内容
 	while (Homepage());
 	//showUserlist();//显示用户列表
+	//printf("%d\n", Get_time());
+	//printf("%d\n", disk_rent(Get_time(), 418562+24*3+1));
+	//puts(getFilmNameByid(10));
 	return 0;
 }

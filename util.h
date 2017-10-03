@@ -1,7 +1,9 @@
-char checkselect();//输入筛选
+char select();//输入筛选
 void back();//返回键
 int Get_time();
 int disk_rent(long borrow_t1, long back_t2);
 struct cart * cartinit(struct cart * head);
 void addfilm(struct cart *head, struct filmborrow *fb);
 int showcart(struct cart *head);
+int checkselect(int select, char * str);
+void clearcart(struct cart * head);

@@ -1,7 +1,7 @@
 #pragma once
 #ifndef _FILM_H
 #define _FILM_H
-struct film * getFilmInfoByName(char * name, struct film *f);//通过名字查询 返回: struct film*(找到)  NULL(未找到)
+struct film * getFilmByName(char * name, struct film *f);//通过名字查询 返回: struct film*(找到)  NULL(未找到)
 void printFilminfo(struct film f);
 void insertFilm(char *name, char country, char type,
 	char year, char is_borrow, float film_price,

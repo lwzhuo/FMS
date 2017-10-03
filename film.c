@@ -4,7 +4,7 @@
 #include"struct.h"
 #include"public.h"
 #include"film.h"
-struct film * getFilmInfoByName(char * name, struct film *f)//通过名字查询
+struct film * getFilmByName(char * name, struct film *f)//通过名字查询
 {
 	int index = 0;
 	FILE *file = fopen("filmbinary", "ab+");
@@ -239,26 +239,27 @@ void borrowfilm(struct cart * head,int uid)
 	FILE * f2 = fopen("vipinfo", "rb");
 	struct vipinfo vi;
 	struct filmborrow fb;
+	struct vip tempv;
 	fread(&vi, sizeof(struct vipinfo), 1, f2);
 	fclose(f2); f2 = NULL;
 	int vipnum = vi.num, flag = 0, i;//i用户数量 flag游标
 	for (int j = 0; j < vipnum; j++)
 	{
 		fseek(f1, sizeof(struct vip)*j, SEEK_SET);
-		fread(&v, sizeof(struct vip), 1, f1);//读入单个用户信息
-		if (v.filmnum != 0)//判断用户是否借阅影片
+		fread(&tempv, sizeof(struct vip), 1, f1);//读入单个用户信息
+		if (tempv.filmnum != 0)//判断用户是否借阅影片
 		{
-			for (int x = 0; x < v.filmnum; x++)//电影借阅文件写入
+			for (int x = 0; x < tempv.filmnum; x++)//电影借阅文件写入
 			{
 				fseek(f, sizeof(struct filmborrow)*(flag + x), SEEK_SET);
 				fread(&fb, sizeof(struct filmborrow), 1, f);
 				fseek(tempf, sizeof(struct filmborrow)*(flag + x), SEEK_SET);
 				fwrite(&fb, sizeof(struct filmborrow), 1, tempf);
 			}
-			flag += v.filmnum;//游标加上用户借阅影片数量 游标后移
+			flag += tempv.filmnum;//游标加上用户借阅影片数量 游标后移
 		}
 		
-		if(v.id==uid)//找到相应用户 开始写入文件 电影借阅文件以及用户文件
+		if(tempv.id==uid)//找到相应用户 开始写入文件 电影借阅文件以及用户文件
 		{
 			i = 0;
 			struct cart * p = head->next;
@@ -272,8 +273,8 @@ void borrowfilm(struct cart * head,int uid)
 			flag += i;//游标后移
 		}
 		fseek(tempf1, sizeof(struct vip)*j, SEEK_SET);
-		v.filmnum += i;//个人借阅数增加
-		fwrite(&v, sizeof(struct vip), 1, tempf1);//写入单个用户信息
+		tempv.filmnum += i;//个人借阅数增加
+		fwrite(&tempv, sizeof(struct vip), 1, tempf1);//写入单个用户信息
 	}
 	fclose(f); f = NULL;
 	fclose(tempf); tempf = NULL;
