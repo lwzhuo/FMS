@@ -25,7 +25,7 @@ struct vip//size 48
 	char name[20];
 	char password[16];
 	int balance;
-	int filmnum;
+	int filmnum;//总借阅电影数
 };
 struct vipinfo {//标示电影数据存储文件的信息 size12
 	int num;

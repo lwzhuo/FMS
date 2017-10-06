@@ -7,3 +7,4 @@ void addfilm(struct cart *head, struct filmborrow *fb);
 int showcart(struct cart *head);
 int checkselect(int select, char * str);
 void clearcart(struct cart * head);
+char * showborrowtime(long borrowtie);

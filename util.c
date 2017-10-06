@@ -1,3 +1,4 @@
+#define _CRT_SECURE_NO_WARNINGS
 /*一些常用检测代码、工具类代码*/
 #include<stdio.h>
 #include "time.h"
@@ -28,6 +29,7 @@ void back()
 			return;
 	}
 }
+/*时间计费模块开始*/
 int Get_time()
 {
 	time_t lt;
@@ -46,6 +48,23 @@ int disk_rent(long borrow_t1, long back_t2)
 	else
 		return m;
 }  //t是两个时间相距的时间差,m是租金
+
+char * showborrowtime(long borrowtime)
+{
+	int nowtime = Get_time();
+	int hour = nowtime - borrowtime;
+	char *msg;
+	msg = (char *)malloc(sizeof(char) * 20);
+	if (hour == 0)
+		sprintf(msg, "刚刚借阅");
+	else if (hour > 0 && hour < 24)
+		sprintf(msg, "借阅%d小时", hour);
+	else
+		sprintf(msg, "借阅%d天", hour / 24);
+	return msg;
+}
+/*时间计费模块结束*/
+
 /*购物车模块代码开始*/
 struct cart * cartinit(struct cart * head)
 {
