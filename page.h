@@ -13,5 +13,7 @@ void adminfilmsearchpage();//管理员电影查找页面
 void adminfilmoperatepage();//管理员影片操作
 void vippage();
 void registrationpage();
+void rechargepage();//账户充值页面
+void returnpage();//账户影片归还页面
 #endif // !_PAGE_H
 

@@ -157,16 +157,21 @@ void viewvipinfo()
 	fclose(f);
 	f = NULL;
 }
+int getvipnum()
+{
+	FILE * f = fopen("vipinfo", "rb");
+	struct vipinfo vi;
+	fread(&vi, sizeof(struct vipinfo), 1, f);
+	fclose(f); f = NULL;
+	return vi.num;
+}
 void showUserlist()
 {
-	int i = 0;
+	int i = 0, num = getvipnum();
 	FILE * f = fopen("vipuser", "rb");
-	FILE * f1 = fopen("vipinfo", "rb");
-	struct vipinfo vi;
 	struct vip v;
-	fread(&vi, sizeof(struct vipinfo), 1, f1);
 	printf("id     用户名      密码\n");
-	while (i<vi.num)
+	while (i < num)
 	{
 		fseek(f, sizeof(struct vip)*i, SEEK_SET);
 		fread(&v, sizeof(struct vip), 1, f);
@@ -174,34 +179,27 @@ void showUserlist()
 		i++;
 	}
 	fclose(f);
-	fclose(f1);
 	f = NULL;
-	f1 = NULL;
 	return;
 }
 int searchVipByName(char * name,struct vip * a)
 {
-	int i;
+	int i, vipnum = getvipnum();
 	FILE * f1 = fopen("vipuser", "rb");
-	FILE * f2 = fopen("vipinfo", "rb");
-	struct vipinfo vi;
-	fread(&vi, sizeof(struct vipinfo), 1, f2);
-	for (i = 0; i < vi.num; i++)
+	for (i = 0; i < vipnum; i++)
 	{
 		fseek(f1, sizeof(struct vip)*i, SEEK_SET);
 		fread(a, sizeof(struct vip), 1, f1);
 		if (!strcmp(a->name, name))
 		{
 			fclose(f1);
-			fclose(f2);
 			return 1;
 		}
 	}
 	fclose(f1);
-	fclose(f2);
 	return 0;//未找到相应用户
 }
-showvipfilm(int uid)
+void showvipfilm(int uid)
 {
 	FILE * f = fopen("borrowfilm", "rb");
 	FILE * f1 = fopen("vipuser", "rb");
@@ -220,12 +218,52 @@ showvipfilm(int uid)
 			break;
 		flag += tempvip.filmnum;
 	}
+	printf("影片名称        借阅时长     状态\n");
 	for (int j = 0; j < tempvip.filmnum; j++)
 	{
 		fseek(f, sizeof(struct filmborrow)*(flag + j), SEEK_SET);
 		fread(&fb, sizeof(struct filmborrow), 1, f);
-		printf("%s %d\n", getFilmNameByid(fb.film_id), fb.borrow_time);
+		if (fb.borrow_time >= 0)
+			printf("%s        %s     借阅中\n", getFilmNameByid(fb.film_id), showborrowtime(fb.borrow_time));
+		else
+			printf("%s        %s     已归还\n", getFilmNameByid(fb.film_id), showborrowtime(fb.borrow_time));
 	}
 	fclose(f);
 	fclose(f1);
+}
+int getVipById(int id,struct vip * a)
+{
+	int i, vipnum = getvipnum();
+	FILE * f1 = fopen("vipuser", "rb");
+	for (i = 0; i < vipnum; i++)
+	{
+		fseek(f1, sizeof(struct vip)*i, SEEK_SET);
+		fread(a, sizeof(struct vip), 1, f1);
+		if (id == a->id)
+		{
+			fclose(f1);
+			return 1;
+		}
+	}
+	fclose(f1);
+	return 0;//未找到相应用户
+}
+void changevip(struct vip vip, int id)
+{
+	int i, vipnum = getvipnum();
+	FILE * oldf = fopen("vipuser", "rb");
+	FILE * newf = fopen("tempvipuser", "wb");
+	struct vip temp;
+	for (i = 0; i < vipnum; i++)
+	{
+		fseek(oldf, sizeof(struct vip)*i, SEEK_SET);
+		fread(&temp, sizeof(struct vip), 1, oldf);
+		if (id == temp.id)
+			temp = vip;
+		fwrite(&temp, sizeof(struct vip), 1, newf);
+	}
+	fclose(oldf); oldf = NULL;
+	fclose(newf); newf = NULL;
+	remove("vipuser");
+	rename("tempvipuser", "vipuser");
 }

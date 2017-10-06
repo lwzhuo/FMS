@@ -322,7 +322,7 @@ void adminfilmsearchpage()//TODO
 		printf("通过年份查找(4)\n");
 		printf("返回(q)\n");
 		c = select();
-		if ((c >= '1' && c <= '4') || c == 'q')
+		if (checkselect(c, "1234q"))
 		{
 			switch (c)
 			{
@@ -332,18 +332,14 @@ void adminfilmsearchpage()//TODO
 				printf("请输入影片名:");
 				scanf("%s", name);
 				if (NULL == getFilmByName(name, &f))
+				{
 					printf("无此影片\n");
+					back();
+				}
 				else
 				{
 					adminfilmoperatepage();
 				}
-				//printf("\n返回(q)");//TODO 返回流程修改
-				//while (1)
-				//{
-				//	c = select();
-				//	if (c == 'q')
-				//		break;
-				//}
 				break;
 			}
 			case '2':
@@ -422,18 +418,17 @@ void vippage()//页面构建范例
 	while (1)
 	{
 		system("cls");
-		printf("影片借阅(1)  影片归还(2) 我的购物车(3) 个人中心(4) 退出登录(q)");
+		printf("影片借阅(1)  影片归还(2) 我的购物车(3) 个人中心(4) 充值(5) 退出登录(q)");
 		s = select();
-		if (!checkselect(s,"1234q"))
+		if (!checkselect(s,"12345q"))
 			continue;
 		switch (s)
 		{
 		case '1':
-		{
 			filmpage();
 			break;
-		}
 		case '2':
+			returnpage();
 			break;
 		case '3':
 		{
@@ -441,19 +436,40 @@ void vippage()//页面构建范例
 			showcart(head);
 			printf("全部借阅(1)\n");//TODO按键
 			borrowfilm(head, v.id);
-			//clearcart(head);
 			break;
 		}
 		case '4':
-			printf("个人信息: 用户名      余额\n");
-			printf("%s  %d\n", v.name, v.balance);
+		{
+			printf("个人信息:\n用户名      余额\n");
+			printf("%s        %d\n", v.name, v.balance);
 			printf("借阅信息:\n");
 			showvipfilm(v.id);
 			back();
 			break;
+		}
+		case '5':
+		{
+			rechargepage();
+			back();
+			break;
+		}
 		case 'q':
 			USERTYPE = 0;
 			return;
 		}
 	}
+}
+void rechargepage()
+{
+	int balance;
+	printf("您当前余额%d\n请输入您要充值的金额:______\b\b\b\b\b\b", v.balance);
+	scanf("%d", &balance);
+	getchar();
+	v.balance += balance;
+	changevip(v, v.id);
+	printf("充值成功,您的余额为%d\n", v.balance);
+}
+void returnpage()
+{
+
 }
