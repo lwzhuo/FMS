@@ -7,6 +7,7 @@
 #include"film.h"
 #include"public.h"
 #include<stdlib.h>
+#include<string.h>
 extern USERTYPE;
 void init()//配置文件，请勿外部调用！ 仅在初始化配置文件时调用
 {
@@ -105,6 +106,7 @@ void filmpage()
 		char name[30];
 		printf("请输入影片名:");
 		scanf("%s", name);
+		getchar();//吸收回车符
 		if (getFilmByName(name, &f) == NULL)
 		{
 			printf("未找到相应影片!\n");
@@ -475,6 +477,8 @@ void vippage()//页面构建范例
 			if (flag)
 				printf("\t您暂无借阅影片\n");
 			printf("\n您的归还信息:\n");
+			c = getvipfilm(v.id);
+			c = c->next;
 			while (c)
 			{
 				if (c->fb->status == 1)
@@ -516,7 +520,7 @@ void returnpage()
 {
 	char s;
 	int pay, paysum = 0;
-	int nowtime = Get_time();
+	int nowtime = Get_time();//获取当前时间
 	while (1)
 	{
 		int flag = 1;
@@ -549,7 +553,7 @@ void returnpage()
 		switch (s)
 		{
 		case '1':
-			pritf("您需要支付%d元\n", paysum);
+			printf("您需要支付%d元\n", paysum);
 			if (v.balance < paysum)
 				printf("您的余额不足,请前往个人中心充值\n");
 			else
@@ -561,9 +565,31 @@ void returnpage()
 			break;
 		case '2':
 		{
-			int fid;
+			int fid, f = 1;
 			printf("请输入您要归还的影片id号:______\b\b\b\b\b\b");
 			scanf("%d", &fid);
+			while (c)
+			{
+				if (c->fb->status == 0)
+				{
+					if (c->fb->film_id == fid)//匹配影片id号
+					{
+						f = 0;
+						pay = disk_rent(c->fb->borrow_time, nowtime);
+						printf("您需要支付%d元\n", pay);
+						if (v.balance < pay)
+							printf("您的余额不足,请前往个人中心充值\n");
+						else
+						{
+							retursinglefilm(v.id, fid);
+							printf("您已成功归还,支付%d元,您当前的余额为%d元\n", pay, v.balance);
+						}
+						back();
+						break;
+					}
+				}
+				c = c->next;
+			}
 			break;
 		}
 		case 'q':
