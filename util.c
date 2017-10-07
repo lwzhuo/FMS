@@ -79,6 +79,7 @@ void addfilm(struct cart *head, struct filmborrow *b)
 	temp->fb = (struct filmborrow *)malloc(sizeof(struct filmborrow));
 	temp->fb->film_id = b->film_id;
 	temp->fb->borrow_time = b->borrow_time;
+	temp->fb->status = b->status;
 	head->next = temp;
 	temp->next = p;
 }

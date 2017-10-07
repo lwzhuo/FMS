@@ -32,9 +32,10 @@ struct vipinfo {//标示电影数据存储文件的信息 size12
 	int singlevipsize;
 	int nextid;
 };
-struct filmborrow {//标示影片租借信息 size8
-	int film_id;//id -1 代表影片已下架
-	int borrow_time;// 时间 -1 代表已归还
+struct filmborrow {//标示影片租借信息 size9
+	int film_id;//id
+	int borrow_time;// 时间
+	char status;//显示影片以及用户借阅状态 正常0 归还1 影片下架2
 };
 typedef struct cart *cartptr;
 typedef struct cart cartnode;
@@ -48,9 +49,9 @@ struct admin//size 40
 	char name[20];
 	char password[16];
 };
-
+//全局变量 程序运行即加载进内存 作为程序运行时通物
 struct vip v;
-struct film f;//全局变量 程序运行即加载进内存 作为程序运行时通物
+struct film f;
 struct cart *head;
 #endif // !_STRUCT_H
 
