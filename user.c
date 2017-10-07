@@ -40,8 +40,7 @@ void createvip(char * username, char * password)
 }
 void viplogin()
 {
-	int flag = 1;
-	while (flag)
+	while (1)
 	{
 		int i = 0;
 		char name[20], pass[16], c;
@@ -77,13 +76,12 @@ void viplogin()
 			{
 				printf("\n用户名或密码错误,请重试!%s %s %s %s\n", v.name, v.password, name, pass);//TODO
 				back();
-				if (flag++ == 3)//三次登录机会
-				{
-					printf("用户名或密码错误三次!返回(1)\n");
-					while (c = select() != '1');
-					return;
-				}
 			}
+		}
+		else
+		{
+			printf("\n此用户名未注册!\n");
+			back();
 		}
 	}
 }
@@ -199,7 +197,8 @@ int searchVipByName(char * name,struct vip * a)
 	fclose(f1);
 	return 0;//未找到相应用户
 }
-void showvipfilm(int uid)
+
+struct cart * getvipfilm(int uid)//利用util.c中购物车模块代码
 {
 	FILE * f = fopen("borrowfilm", "rb");
 	FILE * f1 = fopen("vipuser", "rb");
@@ -207,29 +206,29 @@ void showvipfilm(int uid)
 	struct vipinfo vi;
 	struct filmborrow fb;
 	struct vip tempvip;
+	struct cart c;
+	struct cart *carthead = &c;
+	carthead = cartinit(carthead);
 	fread(&vi, sizeof(struct vipinfo), 1, f2);
 	fclose(f2); f2 = NULL;
-	int vipnum = vi.num, flag = 0, i;//i用户数量 flag游标
-	for (int j = 0; j < vipnum; j++)
+	int vipnum = vi.num, flag = 0;//i用户数量 flag游标
+	for (int j = 0; j < vipnum; j++)//找到用户位置
 	{
-		fseek(f1, sizeof(struct vip)*j,SEEK_SET);
+		fseek(f1, sizeof(struct vip)*j, SEEK_SET);
 		fread(&tempvip, sizeof(struct vip), 1, f1);
 		if (tempvip.id == uid)
 			break;
 		flag += tempvip.filmnum;
 	}
-	printf("影片名称        借阅时长     状态\n");
-	for (int j = 0; j < tempvip.filmnum; j++)
+	for (int j = 0; j < tempvip.filmnum; j++)//遍历用户的影片 存入链表中
 	{
 		fseek(f, sizeof(struct filmborrow)*(flag + j), SEEK_SET);
 		fread(&fb, sizeof(struct filmborrow), 1, f);
-		if (fb.borrow_time >= 0)
-			printf("%s        %s     借阅中\n", getFilmNameByid(fb.film_id), showborrowtime(fb.borrow_time));
-		else
-			printf("%s        %s     已归还\n", getFilmNameByid(fb.film_id), showborrowtime(fb.borrow_time));
+		addfilm(carthead, &fb);
 	}
 	fclose(f);
 	fclose(f1);
+	return carthead;
 }
 int getVipById(int id,struct vip * a)
 {
