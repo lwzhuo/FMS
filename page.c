@@ -142,6 +142,7 @@ void borrowpage(struct film f)
 		struct filmborrow fb;//构造并组装购物车
 		fb.borrow_time = Get_time();//获得租借时间
 		fb.film_id = f.id;
+		fb.status = 0;
 		addfilm(head, &fb);//加入购物车
 		printf("添加成功!\n当前购物车有以下影片\n");//TODO判断添加成功
 		showcart(head);
@@ -432,18 +433,60 @@ void vippage()//页面构建范例
 			break;
 		case '3':
 		{
-			printf("当前购物车有以下影片\n");
-			showcart(head);
-			printf("全部借阅(1)\n");//TODO按键
-			borrowfilm(head, v.id);
+			char c;
+			while (1)
+			{
+				printf("当前购物车有以下影片\n");
+				showcart(head);
+				printf("全部借阅(1) 返回(q)\n");
+				c = select();
+				if (checkselect(c, "1q"))
+					break;
+			}
+			if (c == '1')
+			{
+				borrowfilm(head, v.id);
+				back();
+			}
 			break;
 		}
 		case '4':
 		{
+			int flag = 1;
+			int nowtime = Get_time();
 			printf("个人信息:\n用户名      余额\n");
-			printf("%s        %d\n", v.name, v.balance);
-			printf("借阅信息:\n");
-			showvipfilm(v.id);
+			printf("\t%s        %d\n", v.name, v.balance);
+			struct cart * c = getvipfilm(v.id);
+			c = c->next;
+			printf("\n您的借阅信息:\n");
+			printf("\t影片id    影片名    影片租借金额     影片租借时长(天)\n");
+			while (c)
+			{
+				if (c->fb->status == 0)
+				{
+					flag = 0;
+					printf("\t%d %s   %d    %d\n", c->fb->film_id,
+						getFilmNameByid(c->fb->film_id),
+						disk_rent(c->fb->borrow_time, nowtime),
+						(nowtime-c->fb->borrow_time)/24);
+				}
+				c = c->next;
+			}
+			if (flag)
+				printf("\t您暂无借阅影片\n");
+			printf("\n您的归还信息:\n");
+			while (c)
+			{
+				if (c->fb->status == 1)
+				{
+					flag = 0;
+					printf("\t%d %s\n", c->fb->film_id,
+						getFilmNameByid(c->fb->film_id));
+				}
+				c = c->next;
+			}
+			if (flag)
+				printf("\t您暂无影片需要归还\n");
 			back();
 			break;
 		}
@@ -471,5 +514,60 @@ void rechargepage()
 }
 void returnpage()
 {
-
+	char s;
+	int pay, paysum = 0;
+	int nowtime = Get_time();
+	while (1)
+	{
+		int flag = 1;
+		struct cart * c = getvipfilm(v.id);
+		c = c->next;
+		printf("您当前借阅了以下影片:\n");
+		printf("影片id    影片名    影片租借金额\n");
+		while (c)
+		{
+			if (c->fb->status == 0)
+			{
+				flag = 0;
+				pay = disk_rent(c->fb->borrow_time, nowtime);
+				printf("%d %s %d\n", c->fb->film_id,
+					getFilmNameByid(c->fb->film_id), pay);
+				paysum += pay;
+			}
+			c = c->next;
+		}
+		if (flag)//没有借阅影片的情况
+		{
+			printf("您当前没有借阅影片");
+			back();
+			break;
+		}	
+		printf("全部归还(1) 部分归还(2) 返回(q)\n");
+		s = select();
+		if (!checkselect(s, "12q"))
+			continue;
+		switch (s)
+		{
+		case '1':
+			pritf("您需要支付%d元\n", paysum);
+			if (v.balance < paysum)
+				printf("您的余额不足,请前往个人中心充值\n");
+			else
+			{
+				returnall(v.id);
+				printf("您已成功归还,支付%d元,您当前的余额为%d元\n", paysum, v.balance);
+			}
+			back();
+			break;
+		case '2':
+		{
+			int fid;
+			printf("请输入您要归还的影片id号:______\b\b\b\b\b\b");
+			scanf("%d", &fid);
+			break;
+		}
+		case 'q':
+			return;
+		}
+	}
 }
