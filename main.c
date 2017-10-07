@@ -21,6 +21,7 @@ int main()
 	//fclose(f2);
 	//printf("初始化完毕\n");//TODO完成检查
 	//viewvipinfo();//查看vip用户信息文件内容
+	//showUserlist();
 	while (Homepage());
 	//showUserlist();//显示用户列表
 	//printf("%d\n", Get_time());

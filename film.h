@@ -17,4 +17,6 @@ void borrowfilm(struct cart * head, int id);
 int getFilmSumFromFilminfo();
 int getFilmIdByName(char *name);
 int getIdflagFromFilminfo();
+void returnall(int id);//归还所有影片
+void retursinglefilm(int uid, int fid);//归还单个影片 返回
 #endif // !_FILM_H

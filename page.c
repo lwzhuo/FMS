@@ -438,19 +438,33 @@ void vippage()//页面构建范例
 			char c;
 			while (1)
 			{
-				printf("当前购物车有以下影片\n");
-				showcart(head);
-				printf("全部借阅(1) 返回(q)\n");
-				c = select();
-				if (checkselect(c, "1q"))
+				if (head->next)
+				{
+					printf("当前购物车有以下影片\n");
+					showcart(head);
+					printf("全部借阅(1) 返回(q)\n");
+					c = select();
+					if (checkselect(c, "1q"))
+						break;
+				}
+				else//购物车为空的情况
+				{
+					printf("当前购物车为空\n");
+					c = 'q';
+					back();
 					break;
+				}
 			}
 			if (c == '1')
 			{
 				borrowfilm(head, v.id);
+				printf("借阅成功\n");
+				clearcart(head);
 				back();
+				break;
 			}
-			break;
+			if (c == 'q')
+				break;
 		}
 		case '4':
 		{
@@ -526,6 +540,7 @@ void returnpage()
 		int flag = 1;
 		struct cart * c = getvipfilm(v.id);
 		c = c->next;
+		system("cls");
 		printf("您当前借阅了以下影片:\n");
 		printf("影片id    影片名    影片租借金额\n");
 		while (c)
@@ -559,6 +574,8 @@ void returnpage()
 			else
 			{
 				returnall(v.id);
+				v.balance -= paysum;
+				changevip(v, v.id);
 				printf("您已成功归还,支付%d元,您当前的余额为%d元\n", paysum, v.balance);
 			}
 			back();
@@ -568,6 +585,9 @@ void returnpage()
 			int fid, f = 1;
 			printf("请输入您要归还的影片id号:______\b\b\b\b\b\b");
 			scanf("%d", &fid);
+			getchar();//吸收换行符
+			c = getvipfilm(v.id);
+			c = c->next;
 			while (c)
 			{
 				if (c->fb->status == 0)
@@ -582,14 +602,17 @@ void returnpage()
 						else
 						{
 							retursinglefilm(v.id, fid);
+							v.balance -= paysum;
+							changevip(v, v.id);
 							printf("您已成功归还,支付%d元,您当前的余额为%d元\n", pay, v.balance);
 						}
-						back();
-						break;
 					}
 				}
 				c = c->next;
 			}
+			if (f)
+				printf("输入id错误 请重新输入\n");
+			back();
 			break;
 		}
 		case 'q':

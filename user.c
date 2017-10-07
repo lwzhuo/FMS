@@ -67,7 +67,6 @@ void viplogin()
 			{
 				printf("\n登录成功,欢迎%s\n", v.name);
 				USERTYPE = 1;
-				flag = 0;
 				head = cartinit(head);//登录成功后初始化购物车
 				back();
 				return;

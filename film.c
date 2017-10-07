@@ -341,3 +341,80 @@ int getFilmIdByName(char *name)//通过影片名字查找影片id
 	file = NULL;
 	return -1;//未找到
 }
+void returnall(int uid)
+{
+	int pay = 0;
+	FILE * f = fopen("borrowfilm", "rb");
+	FILE * tempf = fopen("tempborrowfilm", "wb");
+	FILE * f1 = fopen("vipuser", "rb");
+	FILE * f2 = fopen("vipinfo", "rb");
+	struct vipinfo vi;
+	struct filmborrow fb;
+	struct vip tempv;
+	fread(&vi, sizeof(struct vipinfo), 1, f2);
+	fclose(f2); f2 = NULL;
+	int vipnum = vi.num, flag = 0, i;//i用户数量 flag游标
+	for (int j = 0; j < vipnum; j++)
+	{
+		fseek(f1, sizeof(struct vip)*j, SEEK_SET);
+		fread(&tempv, sizeof(struct vip), 1, f1);//读入单个用户信息
+		if (tempv.filmnum != 0)//判断用户是否借阅影片
+		{
+			for (int x = 0; x < tempv.filmnum; x++)//电影借阅文件写入
+			{
+				fseek(f, sizeof(struct filmborrow)*(flag + x), SEEK_SET);
+				fread(&fb, sizeof(struct filmborrow), 1, f);
+				if (tempv.id == uid)//匹配用户
+					if (fb.status == 0)//匹配借阅状态
+						fb.status = 1;//修改用户借阅状态
+				fseek(tempf, sizeof(struct filmborrow)*(flag + x), SEEK_SET);
+				fwrite(&fb, sizeof(struct filmborrow), 1, tempf);
+			}
+			flag += tempv.filmnum;//游标加上用户借阅影片数量 游标后移
+		}
+	}
+	fclose(f); f = NULL;
+	fclose(tempf); tempf = NULL;
+	fclose(f1); f1 = NULL;
+	remove("borrowfilm");
+	rename("tempborrowfilm", "borrowfilm");
+}
+void retursinglefilm(int uid, int fid)
+{
+	int pay = 0;
+	FILE * f = fopen("borrowfilm", "rb");
+	FILE * tempf = fopen("tempborrowfilm", "wb");
+	FILE * f1 = fopen("vipuser", "rb");
+	FILE * f2 = fopen("vipinfo", "rb");
+	struct vipinfo vi;
+	struct filmborrow fb;
+	struct vip tempv;
+	fread(&vi, sizeof(struct vipinfo), 1, f2);
+	fclose(f2); f2 = NULL;
+	int vipnum = vi.num, flag = 0, i;//i用户数量 flag游标
+	for (int j = 0; j < vipnum; j++)
+	{
+		fseek(f1, sizeof(struct vip)*j, SEEK_SET);
+		fread(&tempv, sizeof(struct vip), 1, f1);//读入单个用户信息
+		if (tempv.filmnum != 0)//判断用户是否借阅影片
+		{
+			for (int x = 0; x < tempv.filmnum; x++)//电影借阅文件写入
+			{
+				fseek(f, sizeof(struct filmborrow)*(flag + x), SEEK_SET);
+				fread(&fb, sizeof(struct filmborrow), 1, f);
+				if (tempv.id == uid)//匹配用户
+					if (fb.status == 0)//匹配借阅状态
+						if(fb.film_id==fid)//匹配影片id
+							fb.status = 1;//修改用户借阅状态
+				fseek(tempf, sizeof(struct filmborrow)*(flag + x), SEEK_SET);
+				fwrite(&fb, sizeof(struct filmborrow), 1, tempf);
+			}
+			flag += tempv.filmnum;//游标加上用户借阅影片数量 游标后移
+		}
+	}
+	fclose(f); f = NULL;
+	fclose(tempf); tempf = NULL;
+	fclose(f1); f1 = NULL;
+	remove("borrowfilm");
+	rename("tempborrowfilm", "borrowfilm");
+}

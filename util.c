@@ -102,11 +102,14 @@ int showcart(struct cart * head)
 }
 void clearcart(struct cart * head)
 {
-	struct cart * p = head;
+	struct cart * p = head->next, *temp;
+	head->next = NULL;
 	while (p)
 	{
-		p = p->next;
+		temp = p->next;
+		free(p->fb);
 		free(p);
+		p = temp;
 	}
 }
 /*购物车模块代码结束*/
