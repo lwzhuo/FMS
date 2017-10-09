@@ -40,7 +40,7 @@ int Get_time()
 int disk_rent(long borrow_t1, long back_t2)
 {
 	long m, n, t;
-	t = back_t2 - borrow_t1;
+	t = back_t2 - borrow_t1 + 1;
 	m = t / 72;
 	n = t % 72;
 	if (n != 0)

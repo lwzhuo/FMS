@@ -194,7 +194,7 @@ void adminpage()//退回上一级例子
 		system("cls");
 		printf("影片管理(1)\n");
 		printf("用户管理(2)\n");
-		printf("返回(q)\n");
+		printf("退出登录(q)\n");
 		c = select();
 		if (c == '1' || c == '2' || c == 'q')
 		{
@@ -207,7 +207,8 @@ void adminpage()//退回上一级例子
 				adminpage_user();
 				break;
 			case 'q':
-				return;//退出此页面
+				USERTYPE = 0;
+				return;
 			}
 		}
 	}
@@ -232,6 +233,7 @@ void adminpage_film()
 				int i;
 				printf("请输入上架电影的数量:");
 				scanf("%d", &i);//TODO判断合法性
+				getchar();
 				while (i-- > 0)
 				{
 					struct film f;
@@ -293,6 +295,7 @@ void adminfilmshowpage()//影片显示页面
 				int a, b, c;
 				printf("当前电影数:%d\n请输入开始及结束位置:",getFilmSumFromFilminfo());
 				scanf("%d %d", &a, &b);
+				getchar();
 				showFilmList(a, b);
 				printf("\n返回(q)");//TODO无法返回
 				while (1)
@@ -549,7 +552,7 @@ void returnpage()
 			{
 				flag = 0;
 				pay = disk_rent(c->fb->borrow_time, nowtime);
-				printf("%d %s %d\n", c->fb->film_id,
+				printf("%-4d     %-20s %-4d\n", c->fb->film_id,
 					getFilmNameByid(c->fb->film_id), pay);
 				paysum += pay;
 			}
@@ -602,7 +605,7 @@ void returnpage()
 						else
 						{
 							retursinglefilm(v.id, fid);
-							v.balance -= paysum;
+							v.balance -= pay;
 							changevip(v, v.id);
 							printf("您已成功归还,支付%d元,您当前的余额为%d元\n", pay, v.balance);
 						}

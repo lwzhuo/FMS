@@ -73,7 +73,7 @@ void viplogin()
 			}
 			else
 			{
-				printf("\n用户名或密码错误,请重试!%s %s %s %s\n", v.name, v.password, name, pass);//TODO
+				printf("\n用户名或密码错误,请重试!\n");
 				back();
 			}
 		}
