@@ -444,7 +444,7 @@ void vippage()//页面构建范例
 			if (c == '1')
 			{
 				int filmnum = getvipborrowfilmnum(v.id);
-				if (filmnum + cartfilmnum < MAX_FILM_BORROW_NUM)//判断借阅数量
+				if (filmnum + cartfilmnum <= MAX_FILM_BORROW_NUM)//判断借阅数量
 				{
 					borrowfilm(head, v.id);
 					printf("借阅成功！\n");

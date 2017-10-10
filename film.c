@@ -2,6 +2,7 @@
 #include<stdio.h>
 #include<string.h>
 #include"struct.h"
+#include<stdlib.h>
 #include"public.h"
 #include"film.h"
 struct film * getFilmByName(char * name, struct film *f)//通过名字查询
@@ -450,13 +451,13 @@ void borrowsinglefilm(struct cart * head, int uid, int fid)
 
 		if (tempv.id == uid)//找到相应用户 开始写入文件 电影借阅文件以及用户文件
 		{
-			struct cart * p = head, * temp;
+			struct cart * p = head , *temp;
 			while (p)
 			{
 				if (p->next->fb->film_id == fid)
 				{
 					fseek(tempf, sizeof(struct filmborrow)*(flag + 0), SEEK_SET);
-					fwrite((p->fb), sizeof(struct filmborrow), 1, tempf);
+					fwrite((p->next->fb), sizeof(struct filmborrow), 1, tempf);
 					temp = p->next;
 					p->next = p->next->next;//删除购物车的影片
 					free(temp);

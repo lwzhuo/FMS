@@ -39,7 +39,7 @@ struct filmborrow {//标示影片租借信息 size9
 };
 typedef struct cart *cartptr;
 typedef struct cart cartnode;
-struct cart {
+struct cart {//有头结点 头结点不放影片信息
 	struct filmborrow * fb;
 	cartptr next;
 };

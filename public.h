@@ -5,7 +5,7 @@
 #define COUNTRYNUM 10
 #define YEARNUM 10
 #define TYPENUM 22
-#define MAX_FILM_BORROW_NUM 20//最大允许借阅电影数
+#define MAX_FILM_BORROW_NUM 5//最大允许借阅电影数
 extern int FILMCONUT;//电影总数
 extern char *COUNTRY[COUNTRYNUM];
 extern char *YEAR[YEARNUM];
