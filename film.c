@@ -155,10 +155,9 @@ f.film_price, f.film_sum, f.film_left);
 	}
 	return;
 }
-void changeFilmLeftNum(char * name, int newnum)//更改影片剩余库存数量
+void changeFilmLeftNum(int id, int newnum)//更改影片剩余库存数量
 {
 	struct film f;
-	int id = getFilmIdByName(name);
 	int i = 0;
 	FILE *newfile = fopen("tempfilmbinary", "wb");
 	FILE *oldfile = fopen("filmbinary", "rb");
@@ -218,8 +217,8 @@ void changeFilmPrice(char * name, float newprice)//修改影片价格
 char * getFilmNameByid(int id)
 {
 	FILE * file = fopen("filmbinary", "rb");
-	int i = getFilmSumFromFilminfo();
-	for (int j = 0; j < i; j++)
+	int i = getFilmSumFromFilminfo(), j;
+	for (j = 0; j < i; j++)
 	{
 		fseek(file, sizeof(struct film)*j, SEEK_SET);
 		fread(&f, sizeof(struct film), 1, file);
@@ -244,14 +243,14 @@ void borrowfilm(struct cart * head,int uid)
 	struct vip tempv;
 	fread(&vi, sizeof(struct vipinfo), 1, f2);
 	fclose(f2); f2 = NULL;
-	int vipnum = vi.num, flag = 0, i;//i用户数量 flag游标
-	for (int j = 0; j < vipnum; j++)
+	int vipnum = vi.num, flag = 0, i, j, x;//i用户数量 flag游标
+	for (j = 0; j < vipnum; j++)
 	{
 		fseek(f1, sizeof(struct vip)*j, SEEK_SET);
 		fread(&tempv, sizeof(struct vip), 1, f1);//读入单个用户信息
 		if (tempv.filmnum != 0)//判断用户是否借阅影片
 		{
-			for (int x = 0; x < tempv.filmnum; x++)//电影借阅文件写入
+			for (x = 0; x < tempv.filmnum; x++)//电影借阅文件写入
 			{
 				fseek(f, sizeof(struct filmborrow)*(flag + x), SEEK_SET);
 				fread(&fb, sizeof(struct filmborrow), 1, f);
@@ -355,14 +354,14 @@ void returnall(int uid)
 	struct vip tempv;
 	fread(&vi, sizeof(struct vipinfo), 1, f2);
 	fclose(f2); f2 = NULL;
-	int vipnum = vi.num, flag = 0, i;//i用户数量 flag游标
-	for (int j = 0; j < vipnum; j++)
+	int vipnum = vi.num, flag = 0, i, j, x;//i用户数量 flag游标
+	for (j = 0; j < vipnum; j++)
 	{
 		fseek(f1, sizeof(struct vip)*j, SEEK_SET);
 		fread(&tempv, sizeof(struct vip), 1, f1);//读入单个用户信息
 		if (tempv.filmnum != 0)//判断用户是否借阅影片
 		{
-			for (int x = 0; x < tempv.filmnum; x++)//电影借阅文件写入
+			for (x = 0; x < tempv.filmnum; x++)//电影借阅文件写入
 			{
 				fseek(f, sizeof(struct filmborrow)*(flag + x), SEEK_SET);
 				fread(&fb, sizeof(struct filmborrow), 1, f);
@@ -393,8 +392,8 @@ void retursinglefilm(int uid, int fid)
 	struct vip tempv;
 	fread(&vi, sizeof(struct vipinfo), 1, f2);
 	fclose(f2); f2 = NULL;
-	int vipnum = vi.num, flag = 0, i;//i用户数量 flag游标
-	for (int j = 0; j < vipnum; j++)
+	int vipnum = vi.num, flag = 0, i, j;//i用户数量 flag游标
+	for (j = 0; j < vipnum; j++)
 	{
 		fseek(f1, sizeof(struct vip)*j, SEEK_SET);
 		fread(&tempv, sizeof(struct vip), 1, f1);//读入单个用户信息
@@ -419,4 +418,64 @@ void retursinglefilm(int uid, int fid)
 	fclose(f1); f1 = NULL;
 	remove("borrowfilm");
 	rename("tempborrowfilm", "borrowfilm");
+}
+void borrowsinglefilm(struct cart * head, int uid, int fid)
+{
+	FILE * f = fopen("borrowfilm", "rb");
+	FILE * tempf = fopen("tempborrowfilm", "wb");
+	FILE * f1 = fopen("vipuser", "rb");
+	FILE * tempf1 = fopen("tempvipuser", "wb");
+	FILE * f2 = fopen("vipinfo", "rb");
+	struct vipinfo vi;
+	struct filmborrow fb;
+	struct vip tempv;
+	fread(&vi, sizeof(struct vipinfo), 1, f2);
+	fclose(f2); f2 = NULL;
+	int vipnum = vi.num, flag = 0, j, x;//i用户数量 flag游标
+	for (j = 0; j < vipnum; j++)
+	{
+		fseek(f1, sizeof(struct vip)*j, SEEK_SET);
+		fread(&tempv, sizeof(struct vip), 1, f1);//读入单个用户信息
+		if (tempv.filmnum != 0)//判断用户是否借阅影片
+		{
+			for (x = 0; x < tempv.filmnum; x++)//电影借阅文件写入
+			{
+				fseek(f, sizeof(struct filmborrow)*(flag + x), SEEK_SET);
+				fread(&fb, sizeof(struct filmborrow), 1, f);
+				fseek(tempf, sizeof(struct filmborrow)*(flag + x), SEEK_SET);
+				fwrite(&fb, sizeof(struct filmborrow), 1, tempf);
+			}
+			flag += tempv.filmnum;//游标加上用户借阅影片数量 游标后移
+		}
+
+		if (tempv.id == uid)//找到相应用户 开始写入文件 电影借阅文件以及用户文件
+		{
+			struct cart * p = head, * temp;
+			while (p)
+			{
+				if (p->next->fb->film_id == fid)
+				{
+					fseek(tempf, sizeof(struct filmborrow)*(flag + 0), SEEK_SET);
+					fwrite((p->fb), sizeof(struct filmborrow), 1, tempf);
+					temp = p->next;
+					p->next = p->next->next;//删除购物车的影片
+					free(temp);
+					break;
+				}
+				p = p->next;
+			}
+			flag += 1;//游标后移
+			tempv.filmnum += 1;//个人借阅数增加
+		}
+		fseek(tempf1, sizeof(struct vip)*j, SEEK_SET);
+		fwrite(&tempv, sizeof(struct vip), 1, tempf1);//写入单个用户信息
+	}
+	fclose(f); f = NULL;
+	fclose(tempf); tempf = NULL;
+	fclose(f1); f1 = NULL;
+	fclose(tempf1); tempf1 = NULL;
+	remove("vipuser");
+	remove("borrowfilm");
+	rename("tempborrowfilm", "borrowfilm");
+	rename("tempvipuser", "vipuser");
 }

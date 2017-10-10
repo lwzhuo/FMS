@@ -210,8 +210,8 @@ struct cart * getvipfilm(int uid)//利用util.c中购物车模块代码
 	carthead = cartinit(carthead);
 	fread(&vi, sizeof(struct vipinfo), 1, f2);
 	fclose(f2); f2 = NULL;
-	int vipnum = vi.num, flag = 0;//i用户数量 flag游标
-	for (int j = 0; j < vipnum; j++)//找到用户位置
+	int vipnum = vi.num, flag = 0, j;//i用户数量 flag游标
+	for (j = 0; j < vipnum; j++)//找到用户位置
 	{
 		fseek(f1, sizeof(struct vip)*j, SEEK_SET);
 		fread(&tempvip, sizeof(struct vip), 1, f1);
@@ -219,7 +219,7 @@ struct cart * getvipfilm(int uid)//利用util.c中购物车模块代码
 			break;
 		flag += tempvip.filmnum;
 	}
-	for (int j = 0; j < tempvip.filmnum; j++)//遍历用户的影片 存入链表中
+	for (j = 0; j < tempvip.filmnum; j++)//遍历用户的影片 存入链表中
 	{
 		fseek(f, sizeof(struct filmborrow)*(flag + j), SEEK_SET);
 		fread(&fb, sizeof(struct filmborrow), 1, f);
@@ -264,4 +264,17 @@ void changevip(struct vip vip, int id)
 	fclose(newf); newf = NULL;
 	remove("vipuser");
 	rename("tempvipuser", "vipuser");
+}
+int getvipborrowfilmnum(int id)
+{
+	int num = 0;
+	struct cart * c = getvipfilm(id);
+	c = c->next;
+	while (c)
+	{
+		if (c->fb->status == 0)
+			num++;
+		c = c->next;
+	}
+	return num;
 }

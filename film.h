@@ -9,7 +9,7 @@ void insertFilm(char *name, char country, char type,
 void deleteFilmByName(char * name);
 void showAllFilm();
 void showFilmList(int start, int end);
-void changeFilmLeftNum(char * name, int newnum);
+void changeFilmLeftNum(int id, int newnum);
 void changeFilmPrice(char * name, float newprice);
 void changeFilmSumInFilminfo(int newnum, int newnextid);
 char * getFilmNameByid(int id);
@@ -19,4 +19,5 @@ int getFilmIdByName(char *name);
 int getIdflagFromFilminfo();
 void returnall(int id);//归还所有影片
 void retursinglefilm(int uid, int fid);//归还单个影片 返回
+void borrowsinglefilm(struct cart * head, int uid, int fid);//借阅单个电影
 #endif // !_FILM_H
