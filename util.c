@@ -86,6 +86,7 @@ void addfilm(struct cart *head, struct filmborrow *b)
 int showcart(struct cart * head)
 {
 	cartptr p = head;
+	int filmnum = 0;
 	if (p->next == NULL)
 	{
 		printf("¹ºÎï³µ¿Õ\n");
@@ -95,10 +96,11 @@ int showcart(struct cart * head)
 	p = p->next;
 	while (p)
 	{
+		filmnum++;
 		printf("%d    %s\n", p->fb->film_id, getFilmNameByid(p->fb->film_id));
 		p = p->next;
 	}
-	return 1;
+	return filmnum;
 }
 void clearcart(struct cart * head)
 {

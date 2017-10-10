@@ -92,11 +92,11 @@ void filmpage()
 	{
 		system("cls");
 		printf("按照影片名查询(1)\n");
-		printf("通过国家查找(2)\n");
-		printf("通过影片类型查找(3)\n");
+		//printf("通过国家查找(2)\n");
+		//printf("通过影片类型查找(3)\n");
 		printf("返回(q)\n");
 		s = select();
-		if (checkselect(s,"123q"))
+		if (checkselect(s,"1q"))
 			break;
 	}
 	switch (s)
@@ -116,10 +116,6 @@ void filmpage()
 			borrowpage(f);
 		break;
 	}
-	case '2':
-		break;
-	case '3':
-		break;
 	case 'q':
 		break;
 	}
@@ -131,9 +127,9 @@ void borrowpage(struct film f)
 	{
 		system("cls");
 		printFilminfo(f);
-		printf("\n加入购物车(1)   返回(2)\n");
+		printf("\n加入购物车(1)   返回(q)\n");
 		c = select();
-		if (c == '1' || c == '2')
+		if (checkselect(c,"1q"))
 			break;
 	}
 	switch (c)
@@ -151,7 +147,7 @@ void borrowpage(struct film f)
 		back();
 		break;
 	}
-	case '2':
+	case 'q':
 		return;
 	}
 }
@@ -193,18 +189,15 @@ void adminpage()//退回上一级例子
 	{
 		system("cls");
 		printf("影片管理(1)\n");
-		printf("用户管理(2)\n");
+		//printf("用户管理(2)\n");
 		printf("退出登录(q)\n");
 		c = select();
-		if (c == '1' || c == '2' || c == 'q')
+		if (checkselect(c,"1q"))
 		{
 			switch (c)
 			{
 			case '1':
 				adminpage_film();
-				break;
-			case '2':
-				adminpage_user();
 				break;
 			case 'q':
 				USERTYPE = 0;
@@ -312,10 +305,6 @@ void adminfilmshowpage()//影片显示页面
 		}
 	}
 }
-void adminpage_user()
-{
-	//TODO
-}
 void adminfilmsearchpage()//TODO
 {
 	int c;
@@ -323,12 +312,12 @@ void adminfilmsearchpage()//TODO
 	{
 		system("cls");
 		printf("通过名字查找(1)\n");
-		printf("通过国家查找(2)\n");
-		printf("通过类型查找(3)\n");
-		printf("通过年份查找(4)\n");
+		//printf("通过国家查找(2)\n");
+		//printf("通过类型查找(3)\n");
+		//printf("通过年份查找(4)\n");
 		printf("返回(q)\n");
 		c = select();
-		if (checkselect(c, "1234q"))
+		if (checkselect(c, "1q"))
 		{
 			switch (c)
 			{
@@ -348,15 +337,6 @@ void adminfilmsearchpage()//TODO
 				}
 				break;
 			}
-			case '2':
-				//TODO
-				break;
-			case '3':
-				//TODO
-				break;
-			case '4':
-				//TODO
-				break;
 			case 'q':
 				return;//退出此页面
 			}
@@ -374,10 +354,10 @@ void adminfilmoperatepage()
 		printf("删除这个电影(1)");
 		printf("  修改电影价格(2)");
 		printf("  修改电影余量(3)");
-		printf("  修改电影总量(4)");
+		//printf("  修改电影总量(4)");
 		printf("  返回(q)\n");
 		c = select();
-		if ((c >= '1' && c <= '4') || c == 'q')
+		if (checkselect(c, "123q"))
 		{
 			switch (c)
 			{
@@ -392,23 +372,24 @@ void adminfilmoperatepage()
 				float newprice;
 				printf("请输入新价格:______\b\b\b\b\b\b");
 				scanf("%f", &newprice);
+				getchar();
 				changeFilmPrice(f.film_name, newprice);
 				break;
 			}
 			case '3':
 			{
+				system("cls");
 				int num;
 				printf("请输入新余量:______\b\b\b\b\b\b");
 				scanf("%d", &num);
-				changeFilmLeftNum(f.film_name, num);
-				break;
-			}
-			case '4':
-			{
-				int num;
-				//printf("请输入新总量:______\b\b\b\b\b\b");
-				//scanf("%d", &num);
-				
+				getchar();
+				if (num > f.film_sum)
+					printf("错误,余量大于总量!\n");
+				else
+				{
+					changeFilmLeftNum(f.id, num);
+					printf("修改成功!\n");
+				}
 				back();
 				break;
 			}
@@ -421,10 +402,11 @@ void adminfilmoperatepage()
 void vippage()//页面构建范例
 {
 	char s;
+	int cartfilmnum = 0;
 	while (1)
 	{
 		system("cls");
-		printf("影片借阅(1)  影片归还(2) 我的购物车(3) 个人中心(4) 充值(5) 退出登录(q)");
+		printf("影片查询(1)  影片归还(2) 我的购物车(3) 个人中心(4) 充值(5) 退出登录(q)");
 		s = select();
 		if (!checkselect(s,"12345q"))
 			continue;
@@ -443,11 +425,12 @@ void vippage()//页面构建范例
 			{
 				if (head->next)
 				{
+					system("cls");
 					printf("当前购物车有以下影片\n");
-					showcart(head);
-					printf("全部借阅(1) 返回(q)\n");
+					cartfilmnum = showcart(head);
+					printf("全部借阅(1) 部分借阅(2) 清空购物车(3) 返回(q)\n");
 					c = select();
-					if (checkselect(c, "1q"))
+					if (checkselect(c, "123q"))
 						break;
 				}
 				else//购物车为空的情况
@@ -460,21 +443,81 @@ void vippage()//页面构建范例
 			}
 			if (c == '1')
 			{
-				borrowfilm(head, v.id);
-				printf("借阅成功\n");
-				clearcart(head);
+				int filmnum = getvipborrowfilmnum(v.id);
+				if (filmnum + cartfilmnum < MAX_FILM_BORROW_NUM)//判断借阅数量
+				{
+					borrowfilm(head, v.id);
+					printf("借阅成功！\n");
+					clearcart(head);
+				}
+				else
+					printf("借阅数量超出限制,请您先归还一些影片\n");
 				back();
 				break;
 			}
+			if (c == '2')
+			{
+				while (1)
+				{
+					int fid, f = 1, s;
+					printf("请输入您要借阅的影片id:______\b\b\b\b\b\b");
+					scanf("%d", &fid);
+					getchar();
+					cartptr c = head->next;
+					while (c)
+					{
+						if (c->fb->film_id == fid)
+						{
+							f = 0;
+							break;
+						}
+						c = c->next;
+					}
+					if (f)//判断id
+					{
+						printf("您输入的id有误！重试(1) 返回(q)\n");
+						s = select();
+						if (checkselect(s, "1q"))
+						{
+							if (s == '1')
+								continue;
+							if (s == 'q')
+								break;
+						}
+					}
+					else
+					{
+						int filmnum = getvipborrowfilmnum(v.id);
+						if (filmnum < MAX_FILM_BORROW_NUM)//判断借阅数量
+						{
+							borrowsinglefilm(head, v.id, fid);
+							printf("借阅成功！\n");
+						}
+						else
+							printf("借阅数量超出限制,请您先归还一些影片\n");
+						back();
+						break;
+					}
+				}
+			}
+			if (c == '3')
+			{
+				system("cls");
+				clearcart(head);
+				printf("购物车已清空");
+				back();
+				continue;
+			}
 			if (c == 'q')
 				break;
+			break;
 		}
 		case '4':
 		{
-			int flag = 1;
+			int flag = 1, num = 0;
 			int nowtime = Get_time();
-			printf("个人信息:\n用户名      余额\n");
-			printf("\t%s        %d\n", v.name, v.balance);
+			printf("个人信息:\n\t用户名      余额   可借阅影片数(最多可借%d部影片)\n", MAX_FILM_BORROW_NUM);
+			printf("\t%s        %d   %d\n", v.name, v.balance, MAX_FILM_BORROW_NUM - getvipborrowfilmnum(v.id));
 			struct cart * c = getvipfilm(v.id);
 			c = c->next;
 			printf("\n您的借阅信息:\n");
@@ -484,6 +527,7 @@ void vippage()//页面构建范例
 				if (c->fb->status == 0)
 				{
 					flag = 0;
+					num++;
 					printf("\t%d %s   %d    %d\n", c->fb->film_id,
 						getFilmNameByid(c->fb->film_id),
 						disk_rent(c->fb->borrow_time, nowtime),
@@ -491,11 +535,13 @@ void vippage()//页面构建范例
 				}
 				c = c->next;
 			}
+			printf("您当前借阅了%d张影片\n", num);
 			if (flag)
 				printf("\t您暂无借阅影片\n");
 			printf("\n您的归还信息:\n");
 			c = getvipfilm(v.id);
 			c = c->next;
+			flag = 1;
 			while (c)
 			{
 				if (c->fb->status == 1)
@@ -507,7 +553,7 @@ void vippage()//页面构建范例
 				c = c->next;
 			}
 			if (flag)
-				printf("\t您暂无影片需要归还\n");
+				printf("\t您暂无归还任何影片\n");
 			back();
 			break;
 		}
