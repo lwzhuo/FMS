@@ -184,10 +184,9 @@ void changeFilmLeftNum(int id, int newnum)//更改影片剩余库存数量
 	remove("filmbinary");
 	rename("tempfilmbinary", "filmbinary");
 }
-void changeFilmPrice(char * name, float newprice)//修改影片价格
+void changeFilmPrice(int id, float newprice)//修改影片价格
 {
 	struct film f;
-	int id = getFilmIdByName(name);
 	int i = 0;
 	FILE *newfile = fopen("tempfilmbinary", "wb");
 	FILE *oldfile = fopen("filmbinary", "rb");

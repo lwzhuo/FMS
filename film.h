@@ -10,7 +10,7 @@ void deleteFilmByName(char * name);
 void showAllFilm();
 void showFilmList(int start, int end);
 void changeFilmLeftNum(int id, int newnum);
-void changeFilmPrice(char * name, float newprice);
+void changeFilmPrice(int id, float newprice);
 void changeFilmSumInFilminfo(int newnum, int newnextid);
 char * getFilmNameByid(int id);
 void borrowfilm(struct cart * head, int id);

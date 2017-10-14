@@ -327,7 +327,9 @@ void adminfilmoperatepage()
 				printf("请输入新价格:______\b\b\b\b\b\b");
 				scanf("%f", &newprice);
 				getchar();
-				changeFilmPrice(f.film_name, newprice);
+				changeFilmPrice(f.id, newprice);
+				printf("修改成功!\n");
+				back();
 				break;
 			}
 			case '3':
