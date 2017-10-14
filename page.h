@@ -8,7 +8,6 @@ void adminpage();//管理员页面
 void adminpage_film();//电影管理页面
 void init();//初始化配置文件
 void adminfilmshowpage();//管理员电影显示页面
-void adminfilmsearchpage();//管理员电影查找页面
 void adminfilmoperatepage();//管理员影片操作
 void vippage();
 void registrationpage();

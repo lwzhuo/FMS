@@ -87,22 +87,6 @@ void registrationpage()
 }
 void filmpage()
 {
-	int s;
-	while (1)
-	{
-		system("cls");
-		printf("按照影片名查询(1)\n");
-		//printf("通过国家查找(2)\n");
-		//printf("通过影片类型查找(3)\n");
-		printf("返回(q)\n");
-		s = select();
-		if (checkselect(s,"1q"))
-			break;
-	}
-	switch (s)
-	{
-	case '1':
-	{
 		char name[30];
 		printf("请输入影片名:");
 		scanf("%s", name);
@@ -114,11 +98,6 @@ void filmpage()
 		}
 		else
 			borrowpage(f);
-		break;
-	}
-	case 'q':
-		break;
-	}
 }
 void borrowpage(struct film f)
 {
@@ -242,8 +221,21 @@ void adminpage_film()
 				break;
 			}
 			case '2':
-				adminfilmsearchpage();
+			{
+				char name[30];
+				printf("请输入影片名:");
+				scanf("%s", name);
+				if (NULL == getFilmByName(name, &f))
+				{
+					printf("无此影片\n");
+					back();
+				}
+				else
+				{
+					adminfilmoperatepage();
+				}
 				break;
+			}
 			case '3':
 			{
 				adminfilmshowpage();
@@ -296,44 +288,6 @@ void adminfilmshowpage()//影片显示页面
 					c = select();
 					if (c == 'q')
 						break;
-				}
-				break;
-			}
-			case 'q':
-				return;//退出此页面
-			}
-		}
-	}
-}
-void adminfilmsearchpage()//TODO
-{
-	int c;
-	while (1)
-	{
-		system("cls");
-		printf("通过名字查找(1)\n");
-		//printf("通过国家查找(2)\n");
-		//printf("通过类型查找(3)\n");
-		//printf("通过年份查找(4)\n");
-		printf("返回(q)\n");
-		c = select();
-		if (checkselect(c, "1q"))
-		{
-			switch (c)
-			{
-			case '1':
-			{
-				char name[30];
-				printf("请输入影片名:");
-				scanf("%s", name);
-				if (NULL == getFilmByName(name, &f))
-				{
-					printf("无此影片\n");
-					back();
-				}
-				else
-				{
-					adminfilmoperatepage();
 				}
 				break;
 			}
