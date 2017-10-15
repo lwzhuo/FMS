@@ -161,31 +161,7 @@ void loginpage()
 		}
 	}
 }
-void adminpage()//退回上一级例子
-{
-	int c;
-	while (1)
-	{
-		system("cls");
-		printf("影片管理(1)\n");
-		//printf("用户管理(2)\n");
-		printf("退出登录(q)\n");
-		c = select();
-		if (checkselect(c,"1q"))
-		{
-			switch (c)
-			{
-			case '1':
-				adminpage_film();
-				break;
-			case 'q':
-				USERTYPE = 0;
-				return;
-			}
-		}
-	}
-}
-void adminpage_film()
+void adminpage()
 {
 	int c;
 	while (1)
@@ -194,9 +170,9 @@ void adminpage_film()
 		printf("影片上架(1)\n");
 		printf("影片查找(2)\n");
 		printf("显示影片列表(3)\n");
-		printf("返回(q)\n");
+		printf("退出登录(q)\n");
 		c = select();
-		if ((c >='1'&&c<='3')|| c == 'q')
+		if (checkselect(c, "1234q"))
 		{
 			switch (c)
 			{
@@ -242,6 +218,7 @@ void adminpage_film()
 				break;
 			}
 			case 'q':
+				USERTYPE = 0;
 				return;//退出此页面
 			}
 		}
