@@ -196,10 +196,10 @@ void adminpage()
 					scanf("%s %c %c %c %c %f %hhd %hhd",f.film_name,
 						&f.film_country,&f.film_type,&f.film_year,
 						&f.is_borrow,&f.film_price,&f.film_sum,&f.film_left);
-					printFilminfo(f);
 					insertFilm(f.film_name, f.film_country, f.film_type, f.film_year,
 						f.is_borrow, f.film_price, f.film_sum, f.film_left);
 				}
+				back();
 				break;
 			}
 			case '2':
@@ -293,10 +293,10 @@ void adminfilmoperatepage()
 		printf("删除这个电影(1)");
 		printf("  修改电影价格(2)");
 		printf("  修改电影余量(3)");
-		//printf("  修改电影总量(4)");
+		printf("  修改电影总量(4)");
 		printf("  返回(q)\n");
 		c = select();
-		if (checkselect(c, "123q"))
+		if (checkselect(c, "1234q"))
 		{
 			switch (c)
 			{
@@ -312,7 +312,8 @@ void adminfilmoperatepage()
 				printf("请输入新价格:______\b\b\b\b\b\b");
 				scanf("%f", &newprice);
 				getchar();
-				changeFilmPrice(f.id, newprice);
+				f.film_price = newprice;
+				changeFilm(f.id, f);
 				printf("修改成功!\n");
 				back();
 				break;
@@ -320,15 +321,34 @@ void adminfilmoperatepage()
 			case '3':
 			{
 				system("cls");
-				int num;
+				int newleftnum;
 				printf("请输入新余量:______\b\b\b\b\b\b");
-				scanf("%d", &num);
+				scanf("%d", &newleftnum);
 				getchar();
-				if (num > f.film_sum)
+				if (newleftnum > f.film_sum)
 					printf("错误,余量大于总量!\n");
 				else
 				{
-					changeFilmLeftNum(f.id, num);
+					f.film_left = newleftnum;
+					changeFilm(f.id, f);
+					printf("修改成功!\n");
+				}
+				back();
+				break;
+			}
+			case '4':
+			{
+				system("cls");
+				int newnum;
+				printf("请输入新总量:______\b\b\b\b\b\b");
+				scanf("%d", &newnum);
+				getchar();
+				if (newnum < f.film_left)
+					printf("错误,总量小于余量!\n");
+				else
+				{
+					f.film_left = newnum;
+					changeFilm(f.id, f);
 					printf("修改成功!\n");
 				}
 				back();
