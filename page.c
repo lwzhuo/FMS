@@ -88,6 +88,7 @@ void registrationpage()
 void filmpage()
 {
 		char name[30];
+		system("cls");
 		printf("请输入影片名:");
 		scanf("%s", name);
 		getchar();//吸收回车符
@@ -201,6 +202,7 @@ void adminpage()
 				char name[30];
 				printf("请输入影片名:");
 				scanf("%s", name);
+				getchar();
 				if (NULL == getFilmByName(name, &f))
 				{
 					printf("无此影片\n");
@@ -368,6 +370,7 @@ void vippage()//页面构建范例
 				}
 				else//购物车为空的情况
 				{
+					system("cls");
 					printf("当前购物车为空\n");
 					c = 'q';
 					back();
@@ -447,41 +450,42 @@ void vippage()//页面构建范例
 		}
 		case '4':
 		{
+			system("cls");
 			int flag = 1, num = 0;
 			int nowtime = Get_time();
-			printf("个人信息:\n\t用户名      余额   可借阅影片数(最多可借%d部影片)\n", MAX_FILM_BORROW_NUM);
-			printf("\t%s        %d   %d\n", v.name, v.balance, MAX_FILM_BORROW_NUM - getvipborrowfilmnum(v.id));
+			printf("个人信息:\n\n\t用户名         余额 可借阅影片数(最多可借%d部影片)\n", MAX_FILM_BORROW_NUM);
+			printf("\t%-15s%-5d%-5d\n", v.name, v.balance, MAX_FILM_BORROW_NUM - getvipborrowfilmnum(v.id));
 			struct cart * c = getvipfilm(v.id);
 			c = c->next;
-			printf("\n您的借阅信息:\n");
-			printf("\t影片id    影片名    影片租借金额     影片租借时长(天)\n");
+			printf("\n您的借阅信息:\n\n");
+			printf("\t影片id  影片名            影片租借金额     影片租借时长(天)\n");
 			while (c)
 			{
 				if (c->fb->status == 0)
 				{
 					flag = 0;
 					num++;
-					printf("\t%d %s   %d    %d\n", c->fb->film_id,
+					printf("\t%-4d    %-15s   %-3d              %-d\n", c->fb->film_id,
 						getFilmNameByid(c->fb->film_id),
 						disk_rent(c->fb->borrow_time, nowtime),
 						(nowtime-c->fb->borrow_time)/24);
 				}
 				c = c->next;
 			}
-			printf("您当前借阅了%d张影片\n", num);
+			printf("\t您当前借阅了%d张影片\n", num);
 			if (flag)
 				printf("\t您暂无借阅影片\n");
-			printf("\n您的归还信息:\n");
+			printf("\n您的归还信息:\n\n");
 			c = getvipfilm(v.id);
 			c = c->next;
 			flag = 1;
+			printf("\t影片名\n");
 			while (c)
 			{
 				if (c->fb->status == 1)
 				{
 					flag = 0;
-					printf("\t%d %s\n", c->fb->film_id,
-						getFilmNameByid(c->fb->film_id));
+					printf("\t%s\n", getFilmNameByid(c->fb->film_id));
 				}
 				c = c->next;
 			}
@@ -504,6 +508,7 @@ void vippage()//页面构建范例
 }
 void rechargepage()
 {
+	system("cls");
 	int balance;
 	printf("您当前余额%d\n请输入您要充值的金额:______\b\b\b\b\b\b", v.balance);
 	scanf("%d", &balance);
@@ -524,14 +529,14 @@ void returnpage()
 		c = c->next;
 		system("cls");
 		printf("您当前借阅了以下影片:\n");
-		printf("影片id    影片名    影片租借金额\n");
+		printf("影片id   影片名            影片租借金额\n");
 		while (c)
 		{
 			if (c->fb->status == 0)
 			{
 				flag = 0;
 				pay = disk_rent(c->fb->borrow_time, nowtime);
-				printf("%-4d     %-20s %-4d\n", c->fb->film_id,
+				printf("%-4d    %-15s    %-4d\n", c->fb->film_id,
 					getFilmNameByid(c->fb->film_id), pay);
 				paysum += pay;
 			}

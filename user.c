@@ -92,6 +92,7 @@ void adminlogin()
 	FILE *f = fopen("adminuser", "rb");
 	fread(&a, sizeof(struct admin), 1, f);
 	fclose(f);
+	system("cls");
 	printf("请输入用户名__________\b\b\b\b\b\b\b\b\b\b");
 	gets(name);
 	printf("\n请输入密码__________\b\b\b\b\b\b\b\b\b\b");
@@ -115,8 +116,7 @@ void adminlogin()
 	}
 	else
 		printf("登录失败!\n");
-	printf("返回(1)\n");
-	while (c = select() != '1');
+	back();
 	return;
 }
 void createadmin(int id, char * username, char * password)

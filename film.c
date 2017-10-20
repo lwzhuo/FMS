@@ -147,7 +147,7 @@ void showFilmList(int start, int end)//显示一个区间内的影片信息
 		num++;
 		fseek(file, FILMSIZE * start, SEEK_SET);
 		fread(&f, sizeof(struct film), 1, file);
-		printf("%4d %-4d %-20s %-3s %-3s %-13s %-3s \
+		printf("%-4d %-4d %-20s %-3s %-3s %-13s %-3s \
 %-6.2f %-4d %-4d\n", num, f.id, f.film_name,
 COUNTRY[f.film_country - '0'], TYPE[f.film_type - '0'],
 YEAR[f.film_year - '0'], IS_BORROW[f.is_borrow - '0'],

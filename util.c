@@ -92,12 +92,12 @@ int showcart(struct cart * head)
 		printf("购物车空\n");
 		return 0;
 	}
-	printf("影片id   影片名字\n");
+	printf("影片id    影片名字\n");
 	p = p->next;
 	while (p)
 	{
 		filmnum++;
-		printf("%d    %s\n", p->fb->film_id, getFilmNameByid(p->fb->film_id));
+		printf("%-4d    %10s\n", p->fb->film_id, getFilmNameByid(p->fb->film_id));
 		p = p->next;
 	}
 	return filmnum;

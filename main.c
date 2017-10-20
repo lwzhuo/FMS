@@ -23,9 +23,5 @@ int main()
 	//viewvipinfo();//查看vip用户信息文件内容
 	//showUserlist();
 	while (Homepage());
-	//showUserlist();//显示用户列表
-	//printf("%d\n", Get_time());
-	//printf("%d\n", disk_rent(Get_time(), 418562+24*3+1));
-	//puts(getFilmNameByid(10));
 	return 0;
 }
