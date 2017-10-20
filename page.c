@@ -117,13 +117,18 @@ void borrowpage(struct film f)
 	case '1':
 	{
 		system("cls");
-		struct filmborrow fb;//构造并组装购物车
-		fb.borrow_time = Get_time();//获得租借时间
-		fb.film_id = f.id;
-		fb.status = 0;
-		addfilm(head, &fb);//加入购物车
-		printf("添加成功!\n当前购物车有以下影片\n");//TODO判断添加成功
-		showcart(head);
+		if (f.film_left)//有余量
+		{
+			struct filmborrow fb;//构造并组装购物车
+			fb.borrow_time = Get_time();//获得租借时间
+			fb.film_id = f.id;
+			fb.status = 0;
+			addfilm(head, &fb);//加入购物车
+			printf("添加成功!\n当前购物车有以下影片\n");//TODO判断添加成功
+			showcart(head);
+		}
+		else
+			printf("影片余量为0，添加失败!\n");
 		back();
 		break;
 	}
@@ -199,6 +204,7 @@ void adminpage()
 			}
 			case '2':
 			{
+				system("cls");
 				char name[30];
 				printf("请输入影片名:");
 				scanf("%s", name);
