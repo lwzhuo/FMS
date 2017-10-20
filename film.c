@@ -26,6 +26,27 @@ struct film * getFilmByName(char * name, struct film *f)//通过名字查询
 	file = NULL;
 	return NULL;
 }
+struct film * getFilmById(int id, struct film *f)//通过id查询
+{
+	int index = 0;
+	FILE *file = fopen("filmbinary", "ab+");
+	FILMCONUT = getFilmSumFromFilminfo();
+	while (index < FILMCONUT)
+	{
+		fseek(file, FILMSIZE * index, SEEK_SET);
+		fread(f, FILMSIZE, 1, file);
+		index++;
+		if (id == f->id)
+		{
+			fclose(file);
+			file = NULL;
+			return f;
+		}
+	}
+	fclose(file);
+	file = NULL;
+	return NULL;
+}
 void printFilminfo(struct film f)//打印某个结构体内容
 {
 	printf("id   碟名                 \
@@ -156,56 +177,23 @@ f.film_price, f.film_sum, f.film_left);
 	}
 	return;
 }
-void changeFilmLeftNum(int id, int newnum)//更改影片剩余库存数量
+void changeFilm(int id, struct film newfilminfo)
 {
-	struct film f;
+	struct film tempf;
 	int i = 0;
 	FILE *newfile = fopen("tempfilmbinary", "wb");
 	FILE *oldfile = fopen("filmbinary", "rb");
 	FILMCONUT = getFilmSumFromFilminfo();//如返回-1 代表没找到
 	if (id == -1)
-	{
-		printf("无此电影\n");
 		return;
-	}
 	while (i < FILMCONUT)
 	{
 		fseek(oldfile, FILMSIZE*i, SEEK_SET);
-		fread(&f, sizeof(struct film), 1, oldfile);
-		if (f.id == id)
-		{
-			f.film_left = newnum;
-		}
+		fread(&tempf, sizeof(struct film), 1, oldfile);
+		if (tempf.id == id)
+			tempf = newfilminfo;
 		fseek(newfile, FILMSIZE*i, SEEK_SET);
-		fwrite(&f, sizeof(struct film), 1, newfile);
-		i++;
-	}
-	_fcloseall();
-	remove("filmbinary");
-	rename("tempfilmbinary", "filmbinary");
-}
-void changeFilmPrice(int id, float newprice)//修改影片价格
-{
-	struct film f;
-	int i = 0;
-	FILE *newfile = fopen("tempfilmbinary", "wb");
-	FILE *oldfile = fopen("filmbinary", "rb");
-	FILMCONUT = getFilmSumFromFilminfo();//如返回-1 代表没找到
-	if (id == -1)
-	{
-		printf("无此电影\n");
-		return;
-	}
-	while (i < FILMCONUT)
-	{
-		fseek(oldfile, FILMSIZE*i, SEEK_SET);
-		fread(&f, sizeof(struct film), 1, oldfile);
-		if (f.id == id)
-		{
-			f.film_price = newprice;
-		}
-		fseek(newfile, FILMSIZE*i, SEEK_SET);
-		fwrite(&f, sizeof(struct film), 1, newfile);
+		fwrite(&tempf, sizeof(struct film), 1, newfile);
 		i++;
 	}
 	_fcloseall();
@@ -354,7 +342,7 @@ void returnall(int uid)
 	struct vip tempv;
 	fread(&vi, sizeof(struct vipinfo), 1, f2);
 	fclose(f2); f2 = NULL;
-	int vipnum = vi.num, flag = 0, i, j, x;//i用户数量 flag游标
+	int vipnum = vi.num, flag = 0, j, x;//i用户数量 flag游标
 	for (j = 0; j < vipnum; j++)
 	{
 		fseek(f1, sizeof(struct vip)*j, SEEK_SET);
@@ -419,7 +407,7 @@ void retursinglefilm(int uid, int fid)
 	remove("borrowfilm");
 	rename("tempborrowfilm", "borrowfilm");
 }
-void borrowsinglefilm(struct cart * head, int uid, int fid)
+void borrowsinglefilm(struct cart * head, int uid, int fid)//未完成
 {
 	FILE * f = fopen("borrowfilm", "rb");
 	FILE * tempf = fopen("tempborrowfilm", "wb");
@@ -429,8 +417,13 @@ void borrowsinglefilm(struct cart * head, int uid, int fid)
 	struct vipinfo vi;
 	struct filmborrow fb;
 	struct vip tempv;
+	/*struct film *tempfilm = NULL;
+	int newfilmleft;*/
 	fread(&vi, sizeof(struct vipinfo), 1, f2);
 	fclose(f2); f2 = NULL;
+	/*tempfilm = getFilmById(fid, tempfilm);
+	newfilmleft = --tempfilm->film_left;
+	changeFilmLeftNum(fid, newfilmleft);*/
 	int vipnum = vi.num, flag = 0, j, x;//i用户数量 flag游标
 	for (j = 0; j < vipnum; j++)
 	{

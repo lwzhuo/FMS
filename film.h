@@ -9,10 +9,10 @@ void insertFilm(char *name, char country, char type,
 void deleteFilmByName(char * name);
 void showAllFilm();
 void showFilmList(int start, int end);
-void changeFilmLeftNum(int id, int newnum);
-void changeFilmPrice(int id, float newprice);
+void changeFilm(int id, struct film newfilminfo);
 void changeFilmSumInFilminfo(int newnum, int newnextid);
 char * getFilmNameByid(int id);
+struct film * getFilmById(int id, struct film *f);//Í¨¹ýid²éÑ¯
 void borrowfilm(struct cart * head, int id);
 int getFilmSumFromFilminfo();
 int getFilmIdByName(char *name);
