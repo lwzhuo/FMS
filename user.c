@@ -2,6 +2,7 @@
 #include<stdio.h>
 #include<string.h>
 #include<stdlib.h>
+#include<conio.h>
 #include"struct.h"
 #include"util.h"
 #include"user.h"
@@ -45,9 +46,10 @@ void viplogin()
 		int i = 0;
 		char name[20], pass[16], c;
 		system("cls");
-		printf("请输入用户名__________\b\b\b\b\b\b\b\b\b\b");
+		printf("\n\n\n\n\n");
+		printf("\t\t\t\t\t请输入用户名__________\b\b\b\b\b\b\b\b\b\b");
 		gets(name);
-		printf("请输入密码__________\b\b\b\b\b\b\b\b\b\b");
+		printf("\t\t\t\t\t请输入密码__________\b\b\b\b\b\b\b\b\b\b");
 		while (c = _getch())//密码输入部分
 		{
 			if (c != 13)
@@ -65,7 +67,8 @@ void viplogin()
 		{
 			if (strcmp(v.name, name) == 0 && strcmp(v.password, pass) == 0)
 			{
-				printf("\n登录成功,欢迎%s\n", v.name);
+				color(10, "\n\n\t\t\t\t\t登录成功\n");
+				printf("\t\t\t\t\t欢迎%s\n", v.name);
 				USERTYPE = 1;
 				head = cartinit(head);//登录成功后初始化购物车
 				back();
@@ -73,13 +76,13 @@ void viplogin()
 			}
 			else
 			{
-				printf("\n用户名或密码错误,请重试!\n");
+				color(12,"\n\n\t\t\t\t\t用户名或密码错误,请重试!\n");
 				back();
 			}
 		}
 		else
 		{
-			printf("\n此用户名未注册!\n");
+			color(12,"\n\n\t\t\t\t\t此用户名未注册!\n");
 			back();
 		}
 	}
@@ -93,9 +96,10 @@ void adminlogin()
 	fread(&a, sizeof(struct admin), 1, f);
 	fclose(f);
 	system("cls");
-	printf("请输入用户名__________\b\b\b\b\b\b\b\b\b\b");
+	printf("\n\n\n\n\n");
+	printf("\t\t\t\t\t请输入用户名__________\b\b\b\b\b\b\b\b\b\b");
 	gets(name);
-	printf("\n请输入密码__________\b\b\b\b\b\b\b\b\b\b");
+	printf("\n\n\t\t\t\t\t请输入密码__________\b\b\b\b\b\b\b\b\b\b");
 	while (c = _getch())
 	{
 		if (c != 13)
@@ -111,11 +115,11 @@ void adminlogin()
 	}
 	if (strcmp(a.name, name) == 0 && strcmp(a.password, pass) == 0)
 	{
-		printf("登录成功!\n");
+		color(10,"\n\t\t\t\t\t登录成功!\n");
 		USERTYPE = 2;
 	}
 	else
-		printf("登录失败!\n");
+		color(12,"\n\t\t\t\t\t登录失败!\n");
 	back();
 	return;
 }

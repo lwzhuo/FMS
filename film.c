@@ -1,10 +1,11 @@
 #define _CRT_SECURE_NO_WARNINGS
 #include<stdio.h>
 #include<string.h>
-#include"struct.h"
 #include<stdlib.h>
 #include"public.h"
 #include"film.h"
+#include"struct.h"
+#include"util.h"
 struct film * getFilmByName(char * name, struct film *f)//通过名字查询
 {
 	int index = 0;
@@ -83,11 +84,11 @@ void insertFilm(char *name, char country, char type,
 		f.film_price, f.film_sum, f.film_left);
 	if (fwrite(&f, sizeof(struct film), 1, file))
 	{
-		printf("插入成功!\n");
+		color(10,"插入成功!\n");
 		changeFilmSumInFilminfo(getFilmSumFromFilminfo() + 1, id + 1);//id数和影片+1
 	}
 	else
-		printf("插入失败!\n");
+		color(12,"插入失败!\n");
 	fclose(file);
 	file = NULL;
 }
@@ -97,7 +98,7 @@ void deleteFilmByName(char * name)
 	int id = getFilmIdByName(name);//如未找到相应电影 返回-1
 	if (id == -1)
 	{
-		printf("无此电影\n");
+		color(12,"无此电影\n");
 		return;
 	}
 	int i, j;
@@ -122,7 +123,7 @@ void deleteFilmByName(char * name)
 	_fcloseall();
 	if (remove("filmbinary") == 0)//TODO删除判断
 	{
-		printf("删除成功\n");
+		color(10,"删除成功\n");
 		FILMCONUT--;
 		changeFilmSumInFilminfo(FILMCONUT,-1);//TODO
 	}
@@ -145,17 +146,17 @@ void showFilmList(int start, int end)//显示一个区间内的影片信息
 	struct film f;
 	if (start < 1)
 	{
-		printf("起始位置出错\n");
+		color(12,"起始位置出错\n");
 		return;
 	}
 	if (end>max)
 	{
-		printf("结束位置超过最大电影总数\n");
+		color(12,"结束位置超过最大电影总数\n");
 		return;
 	}
 	if (end < start)
 	{
-		printf("结束位置应大于开始位置\n");
+		color(12,"结束位置应大于开始位置\n");
 		return;
 	}
 	FILE *file = fopen("filmbinary", "rb");

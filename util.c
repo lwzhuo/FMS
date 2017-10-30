@@ -1,11 +1,12 @@
 #define _CRT_SECURE_NO_WARNINGS
 /*一些常用检测代码、工具类代码*/
 #include<stdio.h>
-#include "time.h"
+#include<Windows.h>
+#include"time.h"
 #include"struct.h"
 #include"stdlib.h"
 #include"film.h"
-char select()
+char Select()
 {
 	char c = getchar();
 	while (getchar() != '\n');
@@ -24,10 +25,21 @@ void back()
 	printf("\n返回(q)");//TODO无法返回
 	while (1)
 	{
-		c = select();
+		c = Select();
 		if (c == 'q')
 			return;
 	}
+}
+void color(int x,char *str)//改变输出字符颜色
+{
+	if (x >= 0 && x <= 15)
+	{
+		SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), x);
+		puts(str);
+		SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), 15);
+	}
+	else
+		SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), 15);
 }
 /*时间计费模块开始*/
 int Get_time()

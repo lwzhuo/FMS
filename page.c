@@ -1,13 +1,14 @@
 #define _CRT_SECURE_NO_WARNINGS
 #include<stdio.h>
+#include<stdlib.h>
+#include<string.h>
+#include<conio.h>
 #include"util.h"
 #include"struct.h"
 #include"user.h"
 #include"page.h"
 #include"film.h"
 #include"public.h"
-#include<stdlib.h>
-#include<string.h>
 extern USERTYPE;
 void init()//配置文件，请勿外部调用！ 仅在初始化配置文件时调用
 {
@@ -28,6 +29,7 @@ void init()//配置文件，请勿外部调用！ 仅在初始化配置文件时调用
 	fwrite(&vinfo, sizeof(struct vipinfo), 1, f2);
 	fclose(f2);
 	printf("初始化完毕\n");//TODO完成检查
+	showUserlist();
 }
 int Homepage()
 {
@@ -35,10 +37,12 @@ int Homepage()
 	while (1)
 	{
 		system("cls");
-		printf("注册(1)\n");
-		printf("登录(2)\n");
-		printf("退出系统(q)\n");
-		s = select();
+		printf("\n\n\n\n\n");
+		printf("\t\t\t\t\t影片管理系统\n\n");
+		printf("\t\t\t\t\t注册(1)\n\n");
+		printf("\t\t\t\t\t登录(2)\n\n");
+		printf("\t\t\t\t\t退出系统(q)\n\n");
+		s = Select();
 		if (checkselect(s, "12q"))
 		{
 			switch (s)
@@ -63,9 +67,10 @@ void registrationpage()
 	system("cls");
 	char name[20], pass[16], c;
 	int id = 1, i = 0;
-	printf("请输入用户名__________\b\b\b\b\b\b\b\b\b\b");
+	printf("\n\n\n\n\n");
+	printf("\t\t\t\t\t请输入用户名__________\b\b\b\b\b\b\b\b\b\b");
 	gets(name);
-	printf("请输入密码__________\b\b\b\b\b\b\b\b\b\b");
+	printf("\n\t\t\t\t\t请输入密码__________\b\b\b\b\b\b\b\b\b\b");
 	while (c = _getch())//用户密码输入
 	{
 		if (c != 13)
@@ -80,21 +85,21 @@ void registrationpage()
 		}
 	}
 	if (registration(name, pass))
-		printf("\n注册成功\n");
+		color(10,"\n\n\t\t\t\t\t注册成功\n");
 	else
-		printf("\n用户名已被使用,注册失败\n");
+		color(12,"\n\n\t\t\t\t\t用户名已被使用,注册失败\n");
 	back();
 }
 void filmpage()
 {
 		char name[30];
 		system("cls");
-		printf("请输入影片名:");
+		printf("\t\t\t\t\t请输入影片名:");
 		scanf("%s", name);
 		getchar();//吸收回车符
 		if (getFilmByName(name, &f) == NULL)
 		{
-			printf("未找到相应影片!\n");
+			color(12,"\n\t\t\t\t\t未找到相应影片!\n");
 			back();
 		}
 		else
@@ -108,7 +113,7 @@ void borrowpage(struct film f)
 		system("cls");
 		printFilminfo(f);
 		printf("\n加入购物车(1)   返回(q)\n");
-		c = select();
+		c = Select();
 		if (checkselect(c,"1q"))
 			break;
 	}
@@ -124,11 +129,12 @@ void borrowpage(struct film f)
 			fb.film_id = f.id;
 			fb.status = 0;
 			addfilm(head, &fb);//加入购物车
-			printf("添加成功!\n当前购物车有以下影片\n");//TODO判断添加成功
+			color(10, "添加成功!");
+			printf("\n当前购物车有以下影片\n");//TODO判断添加成功
 			showcart(head);
 		}
 		else
-			printf("影片余量为0，添加失败!\n");
+			color(12,"影片余量为0，添加失败!\n");
 		back();
 		break;
 	}
@@ -144,10 +150,11 @@ void loginpage()
 		if (USERTYPE)//如果已经登录 则不显示以下菜单
 			return;
 		system("cls");
-		printf("1.管理员登录\n");
-		printf("2.vip登录\n");
-		printf("q.返回\n");
-		s = select();
+		printf("\n\n\n\n\n");
+		printf("\t\t\t\t\t1.管理员登录\n\n");
+		printf("\t\t\t\t\t2.vip登录\n\n");
+		printf("\t\t\t\t\tq.返回\n\n");
+		s = Select();
 		if (checkselect(s,"12q"))
 		{
 			if (s == '1')
@@ -173,11 +180,12 @@ void adminpage()
 	while (1)
 	{
 		system("cls");
-		printf("影片上架(1)\n");
-		printf("影片查找(2)\n");
-		printf("显示影片列表(3)\n");
-		printf("退出登录(q)\n");
-		c = select();
+		printf("\n\n\n\n\n");
+		printf("\t\t\t\t\t影片上架(1)\n\n");
+		printf("\t\t\t\t\t影片查找(2)\n\n");
+		printf("\t\t\t\t\t显示影片列表(3)\n\n");
+		printf("\t\t\t\t\t退出登录(q)\n\n");
+		c = Select();
 		if (checkselect(c, "1234q"))
 		{
 			switch (c)
@@ -211,7 +219,7 @@ void adminpage()
 				getchar();
 				if (NULL == getFilmByName(name, &f))
 				{
-					printf("无此影片\n");
+					color(12,"无此影片\n");
 					back();
 				}
 				else
@@ -241,7 +249,7 @@ void adminfilmshowpage()//影片显示页面
 		printf("显示所有影片(1)\n");
 		printf("显示特定区间影片(2)\n");
 		printf("返回(q)\n");
-		c = select();
+		c = Select();
 		if (c == '1' || c == '2' || c == 'q')
 		{
 			switch (c)
@@ -254,7 +262,7 @@ void adminfilmshowpage()//影片显示页面
 				printf("\n返回(q)");
 				while (1)
 				{
-					c = select();
+					c = Select();
 					if (c == 'q')
 						break;
 				}
@@ -270,7 +278,7 @@ void adminfilmshowpage()//影片显示页面
 				printf("\n返回(q)");//TODO无法返回
 				while (1)
 				{
-					c = select();
+					c = Select();
 					if (c == 'q')
 						break;
 				}
@@ -295,7 +303,7 @@ void adminfilmoperatepage()
 		printf("  修改电影余量(3)");
 		printf("  修改电影总量(4)");
 		printf("  返回(q)\n");
-		c = select();
+		c = Select();
 		if (checkselect(c, "1234q"))
 		{
 			switch (c)
@@ -314,7 +322,7 @@ void adminfilmoperatepage()
 				getchar();
 				f.film_price = newprice;
 				changeFilm(f.id, f);
-				printf("修改成功!\n");
+				color(10,"修改成功!\n");
 				back();
 				break;
 			}
@@ -326,12 +334,12 @@ void adminfilmoperatepage()
 				scanf("%d", &newleftnum);
 				getchar();
 				if (newleftnum > f.film_sum)
-					printf("错误,余量大于总量!\n");
+					color(12,"错误,余量大于总量!\n");
 				else
 				{
 					f.film_left = newleftnum;
 					changeFilm(f.id, f);
-					printf("修改成功!\n");
+					color(10,"修改成功!\n");
 				}
 				back();
 				break;
@@ -344,12 +352,12 @@ void adminfilmoperatepage()
 				scanf("%d", &newnum);
 				getchar();
 				if (newnum < f.film_left)
-					printf("错误,总量小于余量!\n");
+					color(12,"错误,总量小于余量!\n");
 				else
 				{
 					f.film_left = newnum;
 					changeFilm(f.id, f);
-					printf("修改成功!\n");
+					color(10,"修改成功!\n");
 				}
 				back();
 				break;
@@ -368,7 +376,7 @@ void vippage()//页面构建范例
 	{
 		system("cls");
 		printf("影片查询(1)  影片归还(2) 我的购物车(3) 个人中心(4) 充值(5) 退出登录(q)");
-		s = select();
+		s = Select();
 		if (!checkselect(s,"12345q"))
 			continue;
 		switch (s)
@@ -390,7 +398,7 @@ void vippage()//页面构建范例
 					printf("当前购物车有以下影片\n");
 					cartfilmnum = showcart(head);
 					printf("全部借阅(1) 部分借阅(2) 清空购物车(3) 返回(q)\n");
-					c = select();
+					c = Select();
 					if (checkselect(c, "123q"))
 						break;
 				}
@@ -409,11 +417,11 @@ void vippage()//页面构建范例
 				if (filmnum + cartfilmnum <= MAX_FILM_BORROW_NUM)//判断借阅数量
 				{
 					borrowfilm(head, v.id);
-					printf("借阅成功！\n");
+					color(10,"借阅成功！\n");
 					clearcart(head);
 				}
 				else
-					printf("借阅数量超出限制,请您先归还一些影片\n");
+					color(12,"借阅数量超出限制,请您先归还一些影片\n");
 				back();
 				break;
 			}
@@ -437,8 +445,9 @@ void vippage()//页面构建范例
 					}
 					if (f)//判断id
 					{
-						printf("您输入的id有误！重试(1) 返回(q)\n");
-						s = select();
+						color(12, "您输入的id有误！\n");
+						printf("重试(1) 返回(q)\n");
+						s = Select();
 						if (checkselect(s, "1q"))
 						{
 							if (s == '1')
@@ -453,10 +462,10 @@ void vippage()//页面构建范例
 						if (filmnum < MAX_FILM_BORROW_NUM)//判断借阅数量
 						{
 							borrowsinglefilm(head, v.id, fid);
-							printf("借阅成功！\n");
+							color(10,"借阅成功！\n");
 						}
 						else
-							printf("借阅数量超出限制,请您先归还一些影片\n");
+							color(12,"借阅数量超出限制,请您先归还一些影片\n");
 						back();
 						break;
 					}
@@ -466,7 +475,7 @@ void vippage()//页面构建范例
 			{
 				system("cls");
 				clearcart(head);
-				printf("购物车已清空");
+				color(10,"购物车已清空");
 				back();
 				continue;
 			}
@@ -541,7 +550,8 @@ void rechargepage()
 	getchar();
 	v.balance += balance;
 	changevip(v, v.id);
-	printf("充值成功,您的余额为%d\n", v.balance);
+	color(10, "充值成功!\n");
+	printf("您的余额为%d\n", v.balance);
 }
 void returnpage()
 {
@@ -575,7 +585,7 @@ void returnpage()
 			break;
 		}	
 		printf("全部归还(1) 部分归还(2) 返回(q)\n");
-		s = select();
+		s = Select();
 		if (!checkselect(s, "12q"))
 			continue;
 		switch (s)
@@ -583,13 +593,14 @@ void returnpage()
 		case '1':
 			printf("您需要支付%d元\n", paysum);
 			if (v.balance < paysum)
-				printf("您的余额不足,请前往个人中心充值\n");
+				color(12,"您的余额不足,请前往个人中心充值\n");
 			else
 			{
 				returnall(v.id);
 				v.balance -= paysum;
 				changevip(v, v.id);
-				printf("您已成功归还,支付%d元,您当前的余额为%d元\n", paysum, v.balance);
+				color(10, "您已成功归还!");
+				printf("支付%d元, 您当前的余额为%d元\n", paysum, v.balance);
 			}
 			back();
 			break;
@@ -611,20 +622,21 @@ void returnpage()
 						pay = disk_rent(c->fb->borrow_time, nowtime);
 						printf("您需要支付%d元\n", pay);
 						if (v.balance < pay)
-							printf("您的余额不足,请前往个人中心充值\n");
+							color(12,"您的余额不足,请前往个人中心充值\n");
 						else
 						{
 							retursinglefilm(v.id, fid);
 							v.balance -= pay;
 							changevip(v, v.id);
-							printf("您已成功归还,支付%d元,您当前的余额为%d元\n", pay, v.balance);
+							color(10, "您已成功归还!\n");
+							printf("支付%d元,您当前的余额为%d元\n", pay, v.balance);
 						}
 					}
 				}
 				c = c->next;
 			}
 			if (f)
-				printf("输入id错误 请重新输入\n");
+				color(12,"输入id错误 请重新输入\n");
 			back();
 			break;
 		}
