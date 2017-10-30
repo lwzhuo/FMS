@@ -78,12 +78,14 @@ void viplogin()
 			{
 				color(12,"\n\n\t\t\t\t\t用户名或密码错误,请重试!\n");
 				back();
+				break;
 			}
 		}
 		else
 		{
 			color(12,"\n\n\t\t\t\t\t此用户名未注册!\n");
 			back();
+			break;
 		}
 	}
 }
