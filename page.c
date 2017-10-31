@@ -10,29 +10,10 @@
 #include"film.h"
 #include"public.h"
 extern USERTYPE;
-void init()//配置文件，请勿外部调用！ 仅在初始化配置文件时调用
-{
-	/*电影配置文件初始化*/
-	struct filminfo info;
-	info.num = 0;
-	info.singlefilmsize = 48;
-	info.nextid = 1;
-	FILE *f1 = fopen("filminfo", "wb");
-	fwrite(&info, sizeof(struct filminfo), 1, f1);
-	fclose(f1);
-	/*用户配置文件初始化*/
-	struct vipinfo vinfo;
-	vinfo.num = 0;
-	vinfo.singlevipsize = 48;
-	vinfo.nextid = 1;
-	FILE *f2 = fopen("vipinfo", "wb");
-	fwrite(&vinfo, sizeof(struct vipinfo), 1, f2);
-	fclose(f2);
-	printf("初始化完毕\n");//TODO完成检查
-	showUserlist();
-}
+
 int Homepage()
 {
+	system("mode con:cols=100 lines=30");//更改窗口大小 字体30
 	int s;
 	while (1)
 	{
@@ -94,7 +75,7 @@ void filmpage()
 {
 		char name[30];
 		system("cls");
-		printf("\t\t\t\t\t请输入影片名:");
+		printf("\n\n\n\n\t\t\t\t\t请输入影片名:");
 		scanf("%s", name);
 		getchar();//吸收回车符
 		if (getFilmByName(name, &f) == NULL)
@@ -193,6 +174,7 @@ void adminpage()
 			case '1':
 			{
 				int i;
+				system("cls");
 				printf("请输入上架电影的数量:");
 				scanf("%d", &i);//TODO判断合法性
 				getchar();
@@ -219,13 +201,11 @@ void adminpage()
 				getchar();
 				if (NULL == getFilmByName(name, &f))
 				{
-					color(12,"无此影片\n");
+					color(12, "无此影片\n");
 					back();
 				}
 				else
-				{
 					adminfilmoperatepage();
-				}
 				break;
 			}
 			case '3':
@@ -246,8 +226,9 @@ void adminfilmshowpage()//影片显示页面
 	while (1)
 	{
 		system("cls");
-		printf("显示所有影片(1)\n");
-		printf("显示特定区间影片(2)\n");
+		printf("\n\n\n\n\n");
+		printf("\t\t\t\t\t显示所有影片(1)\n\n");
+		printf("\t\t\t\t\t显示特定区间影片(2)\n\n");
 		printf("返回(q)\n");
 		c = Select();
 		if (c == '1' || c == '2' || c == 'q')
@@ -257,6 +238,7 @@ void adminfilmshowpage()//影片显示页面
 			case '1':
 			{
 				int c;
+				system("cls");
 				showAllFilm();
 				printf("\n共有%d部影片\n", getFilmSumFromFilminfo());
 				printf("\n返回(q)");
@@ -271,6 +253,7 @@ void adminfilmshowpage()//影片显示页面
 			case '2':
 			{
 				int a, b, c;
+				system("cls");
 				printf("当前电影数:%d\n请输入开始及结束位置:",getFilmSumFromFilminfo());
 				scanf("%d %d", &a, &b);
 				getchar();
@@ -328,7 +311,6 @@ void adminfilmoperatepage()
 			}
 			case '3':
 			{
-				system("cls");
 				int newleftnum;
 				printf("请输入新余量:______\b\b\b\b\b\b");
 				scanf("%d", &newleftnum);
@@ -346,7 +328,6 @@ void adminfilmoperatepage()
 			}
 			case '4':
 			{
-				system("cls");
 				int newnum;
 				printf("请输入新总量:______\b\b\b\b\b\b");
 				scanf("%d", &newnum);
@@ -375,7 +356,13 @@ void vippage()//页面构建范例
 	while (1)
 	{
 		system("cls");
-		printf("影片查询(1)  影片归还(2) 我的购物车(3) 个人中心(4) 充值(5) 退出登录(q)");
+		printf("\n\n\n");
+		printf("\t\t\t\t\t影片查询(1)\n\n");
+		printf("\t\t\t\t\t影片归还(2)\n\n");
+		printf("\t\t\t\t\t我的购物车(3)\n\n");
+		printf("\t\t\t\t\t个人中心(4)\n\n");
+		printf("\t\t\t\t\t充值(5)\n\n");
+		printf("\t\t\t\t\t退出登录(q)\n\n");
 		s = Select();
 		if (!checkselect(s,"12345q"))
 			continue;
@@ -507,9 +494,11 @@ void vippage()//页面构建范例
 				}
 				c = c->next;
 			}
-			printf("\t您当前借阅了%d张影片\n", num);
+			
 			if (flag)
 				printf("\t您暂无借阅影片\n");
+			else
+				printf("\t您当前借阅了%d张影片\n", num);
 			printf("\n您的归还信息:\n\n");
 			c = getvipfilm(v.id);
 			c = c->next;
