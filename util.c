@@ -6,6 +6,29 @@
 #include"struct.h"
 #include"stdlib.h"
 #include"film.h"
+#include"user.h"
+
+void init()//配置文件，请勿外部调用！ 仅在初始化配置文件时调用
+{
+	/*电影配置文件初始化*/
+	struct filminfo info;
+	info.num = 0;
+	info.singlefilmsize = 48;
+	info.nextid = 1;
+	FILE *f1 = fopen("filminfo", "wb");
+	fwrite(&info, sizeof(struct filminfo), 1, f1);
+	fclose(f1);
+	/*用户配置文件初始化*/
+	struct vipinfo vinfo;
+	vinfo.num = 0;
+	vinfo.singlevipsize = 48;
+	vinfo.nextid = 1;
+	FILE *f2 = fopen("vipinfo", "wb");
+	fwrite(&vinfo, sizeof(struct vipinfo), 1, f2);
+	fclose(f2);
+	printf("初始化完毕\n");//TODO完成检查
+	showUserlist();
+}
 char Select()
 {
 	char c = getchar();
