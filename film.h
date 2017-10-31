@@ -12,7 +12,7 @@ void showFilmList(int start, int end);
 void changeFilm(int id, struct film newfilminfo);
 void changeFilmSumInFilminfo(int newnum, int newnextid);
 char * getFilmNameByid(int id);
-struct film * getFilmById(int id, struct film *f);//通过id查询
+void getFilmById(int id, struct film *f);//通过id查询
 void borrowfilm(struct cart * head, int id);
 int getFilmSumFromFilminfo();
 int getFilmIdByName(char *name);

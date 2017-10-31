@@ -27,10 +27,10 @@ struct film * getFilmByName(char * name, struct film *f)//通过名字查询
 	file = NULL;
 	return NULL;
 }
-struct film * getFilmById(int id, struct film *f)//通过id查询
+void getFilmById(int id, struct film *f)//通过id查询
 {
 	int index = 0;
-	FILE *file = fopen("filmbinary", "ab+");
+	FILE *file = fopen("filmbinary", "rb");
 	FILMCONUT = getFilmSumFromFilminfo();
 	while (index < FILMCONUT)
 	{
@@ -38,25 +38,23 @@ struct film * getFilmById(int id, struct film *f)//通过id查询
 		fread(f, FILMSIZE, 1, file);
 		index++;
 		if (id == f->id)
-		{
-			fclose(file);
-			file = NULL;
-			return f;
-		}
+			break;
 	}
 	fclose(file);
-	file = NULL;
-	return NULL;
 }
 void printFilminfo(struct film f)//打印某个结构体内容
 {
 	printf("id   碟名                 \
-国家 类型 年份          状态 价格   总量 余量\n");
-	printf("%-4d %-20s %-3s %-3s %-13s %-3s \
-%-6.2f %-4d %-4d\n", f.id, f.film_name,
-COUNTRY[f.film_country - '0'], TYPE[f.film_type - '0'],
-YEAR[f.film_year - '0'], IS_BORROW[f.is_borrow - '0'],
-f.film_price, f.film_sum, f.film_left);
+国家 类型 年份          余量 价格   总量 状态 \n");
+	printf("%-4d %-20s %-3s %-3s %-13s %-6.2f %-4d %-4d ", 
+		f.id, f.film_name,COUNTRY[f.film_country - '0'], 
+		TYPE[f.film_type - '0'],YEAR[f.film_year - '0'], 
+		f.film_price, f.film_sum,f.film_left);
+	if (f.is_borrow - '0' == 1)
+		color(10, IS_BORROW[f.is_borrow - '0']);
+	else
+		color(12, IS_BORROW[f.is_borrow - '0']);
+	printf("\n");
 	return;
 }
 void insertFilm(char *name, char country, char type,
@@ -161,7 +159,7 @@ void showFilmList(int start, int end)//显示一个区间内的影片信息
 	}
 	FILE *file = fopen("filmbinary", "rb");
 	printf("序号 id   碟名                 \
-国家 类型 年份          状态 价格   总量 余量\n");
+国家 类型 年份          状态 价格   总量 余量 状态\n");
 	start--;
 	end--;
 	while (start <= end)
@@ -170,10 +168,15 @@ void showFilmList(int start, int end)//显示一个区间内的影片信息
 		fseek(file, FILMSIZE * start, SEEK_SET);
 		fread(&f, sizeof(struct film), 1, file);
 		printf("%-4d %-4d %-20s %-3s %-3s %-13s %-3s \
-%-6.2f %-4d %-4d\n", num, f.id, f.film_name,
+%-6.2f %-4d %-4d ", num, f.id, f.film_name,
 COUNTRY[f.film_country - '0'], TYPE[f.film_type - '0'],
 YEAR[f.film_year - '0'], IS_BORROW[f.is_borrow - '0'],
 f.film_price, f.film_sum, f.film_left);
+		if (f.is_borrow - '0' == 1)
+			color(10, IS_BORROW[f.is_borrow - '0']);
+		else
+			color(12, IS_BORROW[f.is_borrow - '0']);
+		printf("\n");
 		start++;
 	}
 	return;
@@ -197,11 +200,12 @@ void changeFilm(int id, struct film newfilminfo)
 		fwrite(&tempf, sizeof(struct film), 1, newfile);
 		i++;
 	}
-	_fcloseall();
+	fclose(oldfile);
+	fclose(newfile);
 	remove("filmbinary");
 	rename("tempfilmbinary", "filmbinary");
 	oldfile = NULL;
-	oldfile = NULL;
+	newfile = NULL;
 }
 char * getFilmNameByid(int id)
 {
@@ -230,6 +234,7 @@ void borrowfilm(struct cart * head,int uid)
 	struct vipinfo vi;
 	struct filmborrow fb;
 	struct vip tempv;
+	struct film tempfilm;
 	fread(&vi, sizeof(struct vipinfo), 1, f2);
 	fclose(f2); f2 = NULL;
 	int vipnum = vi.num, flag = 0, i, j, x;//i用户数量 flag游标
@@ -255,6 +260,9 @@ void borrowfilm(struct cart * head,int uid)
 			struct cart * p = head->next;
 			while (p)
 			{
+				getFilmById(p->fb->film_id, &tempfilm);
+				tempfilm.film_left--;
+				changeFilm(tempfilm.id, tempfilm);
 				fseek(tempf, sizeof(struct filmborrow)*(flag + i), SEEK_SET);
 				fwrite((p->fb), sizeof(struct filmborrow), 1, tempf);
 				i++;
@@ -262,6 +270,76 @@ void borrowfilm(struct cart * head,int uid)
 			}
 			flag += i;//游标后移
 			tempv.filmnum += i;//个人借阅数增加
+		}
+		fseek(tempf1, sizeof(struct vip)*j, SEEK_SET);
+		fwrite(&tempv, sizeof(struct vip), 1, tempf1);//写入单个用户信息
+	}
+	fclose(f); f = NULL;
+	fclose(tempf); tempf = NULL;
+	fclose(f1); f1 = NULL;
+	fclose(tempf1); tempf1 = NULL;
+	remove("vipuser");
+	remove("borrowfilm");
+	rename("tempborrowfilm", "borrowfilm");
+	rename("tempvipuser", "vipuser");
+}
+void borrowsinglefilm(struct cart * head, int uid, int fid)
+{
+	FILE * f = fopen("borrowfilm", "rb");
+	FILE * tempf = fopen("tempborrowfilm", "wb");
+	FILE * f1 = fopen("vipuser", "rb");
+	FILE * tempf1 = fopen("tempvipuser", "wb");
+	FILE * f2 = fopen("vipinfo", "rb");
+	struct vipinfo vi;
+	struct filmborrow fb;
+	struct vip tempv;
+	struct film tempfilm;
+	/*struct film *tempfilm = NULL;
+	int newfilmleft;*/
+	fread(&vi, sizeof(struct vipinfo), 1, f2);
+	fclose(f2); f2 = NULL;
+	getFilmById(fid, &tempfilm);
+	/*tempfilm = getFilmById(fid, tempfilm);
+	newfilmleft = --tempfilm->film_left;
+	changeFilmLeftNum(fid, newfilmleft);*/
+	int vipnum = vi.num, flag = 0, j, x;//i用户数量 flag游标
+	for (j = 0; j < vipnum; j++)
+	{
+		fseek(f1, sizeof(struct vip)*j, SEEK_SET);
+		fread(&tempv, sizeof(struct vip), 1, f1);//读入单个用户信息
+		if (tempv.filmnum != 0)//判断用户是否借阅影片
+		{
+			for (x = 0; x < tempv.filmnum; x++)//电影借阅文件写入
+			{
+				fseek(f, sizeof(struct filmborrow)*(flag + x), SEEK_SET);
+				fread(&fb, sizeof(struct filmborrow), 1, f);
+				fseek(tempf, sizeof(struct filmborrow)*(flag + x), SEEK_SET);
+				fwrite(&fb, sizeof(struct filmborrow), 1, tempf);
+			}
+			flag += tempv.filmnum;//游标加上用户借阅影片数量 游标后移
+		}
+
+		if (tempv.id == uid)//找到相应用户 开始写入文件 电影借阅文件以及用户文件
+		{
+			struct cart * p = head, *temp;
+			while (p)
+			{
+				if (p->next->fb->film_id == fid)
+				{
+					getFilmById(p->next->fb->film_id, &tempfilm);
+					tempfilm.film_left--;
+					changeFilm(tempfilm.id, tempfilm);
+					fseek(tempf, sizeof(struct filmborrow)*(flag + 0), SEEK_SET);
+					fwrite((p->next->fb), sizeof(struct filmborrow), 1, tempf);
+					temp = p->next;
+					p->next = p->next->next;//删除购物车的影片
+					free(temp);
+					break;
+				}
+				p = p->next;
+			}
+			flag += 1;//游标后移
+			tempv.filmnum += 1;//个人借阅数增加
 		}
 		fseek(tempf1, sizeof(struct vip)*j, SEEK_SET);
 		fwrite(&tempv, sizeof(struct vip), 1, tempf1);//写入单个用户信息
@@ -381,7 +459,7 @@ void retursinglefilm(int uid, int fid)
 	struct vip tempv;
 	fread(&vi, sizeof(struct vipinfo), 1, f2);
 	fclose(f2); f2 = NULL;
-	int vipnum = vi.num, flag = 0, i, j;//i用户数量 flag游标
+	int vipnum = vi.num, flag = 0, j;//i用户数量 flag游标
 	for (j = 0; j < vipnum; j++)
 	{
 		fseek(f1, sizeof(struct vip)*j, SEEK_SET);
@@ -407,69 +485,4 @@ void retursinglefilm(int uid, int fid)
 	fclose(f1); f1 = NULL;
 	remove("borrowfilm");
 	rename("tempborrowfilm", "borrowfilm");
-}
-void borrowsinglefilm(struct cart * head, int uid, int fid)//未完成
-{
-	FILE * f = fopen("borrowfilm", "rb");
-	FILE * tempf = fopen("tempborrowfilm", "wb");
-	FILE * f1 = fopen("vipuser", "rb");
-	FILE * tempf1 = fopen("tempvipuser", "wb");
-	FILE * f2 = fopen("vipinfo", "rb");
-	struct vipinfo vi;
-	struct filmborrow fb;
-	struct vip tempv;
-	/*struct film *tempfilm = NULL;
-	int newfilmleft;*/
-	fread(&vi, sizeof(struct vipinfo), 1, f2);
-	fclose(f2); f2 = NULL;
-	/*tempfilm = getFilmById(fid, tempfilm);
-	newfilmleft = --tempfilm->film_left;
-	changeFilmLeftNum(fid, newfilmleft);*/
-	int vipnum = vi.num, flag = 0, j, x;//i用户数量 flag游标
-	for (j = 0; j < vipnum; j++)
-	{
-		fseek(f1, sizeof(struct vip)*j, SEEK_SET);
-		fread(&tempv, sizeof(struct vip), 1, f1);//读入单个用户信息
-		if (tempv.filmnum != 0)//判断用户是否借阅影片
-		{
-			for (x = 0; x < tempv.filmnum; x++)//电影借阅文件写入
-			{
-				fseek(f, sizeof(struct filmborrow)*(flag + x), SEEK_SET);
-				fread(&fb, sizeof(struct filmborrow), 1, f);
-				fseek(tempf, sizeof(struct filmborrow)*(flag + x), SEEK_SET);
-				fwrite(&fb, sizeof(struct filmborrow), 1, tempf);
-			}
-			flag += tempv.filmnum;//游标加上用户借阅影片数量 游标后移
-		}
-
-		if (tempv.id == uid)//找到相应用户 开始写入文件 电影借阅文件以及用户文件
-		{
-			struct cart * p = head , *temp;
-			while (p)
-			{
-				if (p->next->fb->film_id == fid)
-				{
-					fseek(tempf, sizeof(struct filmborrow)*(flag + 0), SEEK_SET);
-					fwrite((p->next->fb), sizeof(struct filmborrow), 1, tempf);
-					temp = p->next;
-					p->next = p->next->next;//删除购物车的影片
-					free(temp);
-					break;
-				}
-				p = p->next;
-			}
-			flag += 1;//游标后移
-			tempv.filmnum += 1;//个人借阅数增加
-		}
-		fseek(tempf1, sizeof(struct vip)*j, SEEK_SET);
-		fwrite(&tempv, sizeof(struct vip), 1, tempf1);//写入单个用户信息
-	}
-	fclose(f); f = NULL;
-	fclose(tempf); tempf = NULL;
-	fclose(f1); f1 = NULL;
-	fclose(tempf1); tempf1 = NULL;
-	remove("vipuser");
-	remove("borrowfilm");
-	rename("tempborrowfilm", "borrowfilm");
-	rename("tempvipuser", "vipuser");
 }
