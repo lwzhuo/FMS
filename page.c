@@ -157,6 +157,50 @@ void loginpage()
 }
 void adminpage()
 {
+	int s;
+	while (1)
+	{
+		system("cls");
+		printf("\n\n\n\n\n");
+		printf("\t\t\t\t\t1.影片管理\n\n");
+		printf("\t\t\t\t\t2.用户管理\n\n");
+		printf("\t\t\t\t\tq.返回\n\n");
+		s = Select();
+		if (checkselect(s, "12q"))
+		{
+			if (s == '1')
+				adminfilmpage();
+			if (s == '2')
+				adminuserpage();
+			if (s == 'q')
+				return;
+		}
+	}
+}
+void adminuserpage()
+{
+	int s;
+	while (1)
+	{
+		system("cls");
+		printf("\n\n\n\n\n");
+		printf("\t\t\t\t\t1.显示用户列表\n\n");
+		printf("\t\t\t\t\t2.用户管理\n\n");
+		printf("\t\t\t\t\tq.返回\n\n");
+		s = Select();
+		if (checkselect(s, "12q"))
+		{
+			if (s == '1')
+				adminfilmpage();
+			if (s == '2')
+				adminuserpage();
+			if (s == 'q')
+				return;
+		}
+	}
+}
+void adminfilmpage()
+{
 	int c;
 	while (1)
 	{
@@ -165,6 +209,7 @@ void adminpage()
 		printf("\t\t\t\t\t影片上架(1)\n\n");
 		printf("\t\t\t\t\t影片查找(2)\n\n");
 		printf("\t\t\t\t\t显示影片列表(3)\n\n");
+		printf("\t\t\t\t\t显示影片借阅信息(4)\n\n");
 		printf("\t\t\t\t\t退出登录(q)\n\n");
 		c = Select();
 		if (checkselect(c, "1234q"))
@@ -213,6 +258,12 @@ void adminpage()
 			case '3':
 			{
 				adminfilmshowpage();
+				break;
+			}
+			case '4':
+			{
+				ShowfilmBorrowStatus();
+				back();
 				break;
 			}
 			case 'q':
