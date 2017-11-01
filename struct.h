@@ -27,10 +27,11 @@ struct vip//size 48
 	int balance;
 	int filmnum;//总借阅电影数
 };
-struct vipinfo {//标示用户数据存储文件的信息 size12
+struct vipinfo {//标示用户数据存储文件的信息 size16
 	int num;
 	int singlevipsize;
 	int nextid;
+	int MAX_FILM_BORROW_NUM;
 };
 struct filmborrow {//标示影片租借信息 size9
 	int film_id;//id
