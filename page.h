@@ -6,6 +6,8 @@ void loginpage();//登录页面
 void borrowpage(struct film f);//借阅页面
 void adminpage();//管理员页面
 void init();//初始化配置文件
+void adminuserpage();//管理员用户管理页面
+void adminfilmpage();//管理员电影管理页面
 void adminfilmshowpage();//管理员电影显示页面
 void adminfilmoperatepage();//管理员影片操作
 void vippage();

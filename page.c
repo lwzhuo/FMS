@@ -14,6 +14,7 @@ extern USERTYPE;
 int Homepage()
 {
 	system("mode con:cols=100 lines=30");//更改窗口大小 字体30
+	MAX_FILM_BORROW_NUM = getvipmaxfilmborrownum();
 	int s;
 	while (1)
 	{
@@ -185,15 +186,31 @@ void adminuserpage()
 		system("cls");
 		printf("\n\n\n\n\n");
 		printf("\t\t\t\t\t1.显示用户列表\n\n");
-		printf("\t\t\t\t\t2.用户管理\n\n");
+		printf("\t\t\t\t\t2.修改用户可借影片数量\n\n");
 		printf("\t\t\t\t\tq.返回\n\n");
 		s = Select();
 		if (checkselect(s, "12q"))
 		{
 			if (s == '1')
-				adminfilmpage();
+			{
+				system("cls");
+				int i = 0, num = getvipnum();
+				FILE * f = fopen("vipuser", "rb");
+				struct vip v;
+				printf("id     用户名      密码     余额   借阅电影数\n");
+				while (i < num)
+				{
+					fseek(f, sizeof(struct vip)*i, SEEK_SET);
+					fread(&v, sizeof(struct vip), 1, f);
+					printf("%-7d %-10s %-10s %-3d   %-3d\n", v.id, v.name, v.password,v.balance,v.filmnum);
+					i++;
+				}
+				fclose(f);
+				f = NULL;
+				back();
+			}
 			if (s == '2')
-				adminuserpage();
+				changeVipBorrowFilmNum();
 			if (s == 'q')
 				return;
 		}
@@ -210,7 +227,7 @@ void adminfilmpage()
 		printf("\t\t\t\t\t影片查找(2)\n\n");
 		printf("\t\t\t\t\t显示影片列表(3)\n\n");
 		printf("\t\t\t\t\t显示影片借阅信息(4)\n\n");
-		printf("\t\t\t\t\t退出登录(q)\n\n");
+		printf("\t\t\t\t\t返回(q)\n\n");
 		c = Select();
 		if (checkselect(c, "1234q"))
 		{
@@ -461,7 +478,7 @@ void vippage()//页面构建范例
 					clearcart(head);
 				}
 				else
-					color(12,"借阅数量超出限制,请您先归还一些影片\n");
+					color(12,"借阅数量超出限制\n");
 				back();
 				break;
 			}
