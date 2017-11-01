@@ -4,6 +4,7 @@
 #define YEARNUM 10
 #define TYPENUM 22
 int FILMCONUT;//电影总数
+int MAX_FILM_BORROW_NUM;//用户可借阅电影最大数
 char *COUNTRY[COUNTRYNUM] = { "内地", "香港", "美国" ,"欧洲" ,
 "韩国", "日本" ,"台湾", "泰国" ,
 "印度" ,"其他" };
