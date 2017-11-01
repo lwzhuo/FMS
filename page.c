@@ -549,12 +549,13 @@ void returnpage()
 	char s;
 	int pay, paysum, flag;
 	int nowtime = Get_time();//获取当前时间
-	struct cart * c;
+	struct cart * c = getvipfilm(v.id);
+	c = c->next;
 	while (1)
 	{
 		flag = 1;
-		c = getvipfilm(v.id);
 		paysum = 0;
+		c = getvipfilm(v.id);
 		c = c->next;
 		system("cls");
 		printf("您当前借阅了以下影片:\n");
