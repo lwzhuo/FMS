@@ -6,6 +6,7 @@
 #include"film.h"
 #include"struct.h"
 #include"util.h"
+#include"user.h"
 struct film * getFilmByName(char * name, struct film *f)//通过名字查询
 {
 	int index = 0;
@@ -495,4 +496,21 @@ void retursinglefilm(int uid, int fid)
 	fclose(f1); f1 = NULL;
 	remove("borrowfilm");
 	rename("tempborrowfilm", "borrowfilm");
+}
+void ShowfilmBorrowStatus()//展示所有影片借阅状态
+{
+	system("cls");
+	int i, filmnum = getFilmSumFromFilminfo(), num;
+	FILE * file = fopen("filmbinary", "rb");
+	struct film tempf;
+	printf("序号 id   影片名               借阅人数\n");
+	for(i=0;i<filmnum;i++)
+	{
+		fseek(file, FILMSIZE * i, SEEK_SET);
+		fread(&tempf, sizeof(struct film), 1, file);
+		num = (tempf.film_sum - '0') - (tempf.film_left - '0');
+		if (num)
+			printf("%-4d %-3d  %-20s %-3d\n", i + 1, tempf.id, tempf.film_name, num);
+	}
+	fclose(file);
 }

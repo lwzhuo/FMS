@@ -20,4 +20,5 @@ int getIdflagFromFilminfo();
 void returnall(int id);//归还所有影片
 void retursinglefilm(int uid, int fid);//归还单个影片 返回
 void borrowsinglefilm(struct cart * head, int uid, int fid);//借阅单个电影
+void ShowfilmBorrowStatus();//展示所有影片借阅状态
 #endif // !_FILM_H
