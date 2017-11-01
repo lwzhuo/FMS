@@ -7,6 +7,7 @@
 #include"util.h"
 #include"user.h"
 #include"film.h"
+#include"public.h"
 
 extern USERTYPE;
 int registration(char * name,char * pass)
@@ -168,6 +169,14 @@ int getvipnum()
 	fclose(f); f = NULL;
 	return vi.num;
 }
+int getvipmaxfilmborrownum()
+{
+	FILE * f = fopen("vipinfo", "rb");
+	struct vipinfo vi;
+	fread(&vi, sizeof(struct vipinfo), 1, f);
+	fclose(f); f = NULL;
+	return vi.MAX_FILM_BORROW_NUM;
+}
 void showUserlist()
 {
 	int i = 0, num = getvipnum();
@@ -283,4 +292,46 @@ int getvipborrowfilmnum(int id)
 		c = c->next;
 	}
 	return num;
+}
+void changeVipBorrowFilmNum()
+{
+	system("cls");
+	int newnum, max = 0, i = 0, vipnum = getvipnum();
+	FILE * f = fopen("vipuser", "rb");
+	struct vip tempv;
+	while (i < vipnum)
+	{
+		fseek(f, sizeof(struct vip)*i, SEEK_SET);
+		fread(&tempv, sizeof(struct vip), 1, f);
+		if (max < tempv.filmnum)
+			max = tempv.filmnum;
+		i++;
+	}
+	fclose(f);
+	f = NULL;
+	printf("当前用户可借阅电影最大数目:%d\n", MAX_FILM_BORROW_NUM);
+	printf("当前所有用户借阅电影的最大数目:%d\n", max);
+	printf("请输入新数量(新数量要大于当前借阅的电影数目最多的用户的借阅数):_______\b\b\b\b\b\b\b");
+	scanf("%d", &newnum);
+	getchar();
+	if (newnum < max)
+		color(12, "数值不合法!\n");
+	else//修改数值
+	{
+		MAX_FILM_BORROW_NUM = newnum;
+		struct vipinfo vi;
+		FILE * newfile = fopen("tempvipinfo", "wb");
+		FILE * oldfile = fopen("vipinfo", "rb");
+		fread(&vi, sizeof(struct vipinfo), 1, oldfile);
+		vi.MAX_FILM_BORROW_NUM = newnum;
+		fwrite(&vi, sizeof(struct vipinfo), 1, newfile);
+		fclose(oldfile);
+		fclose(newfile);
+		oldfile = NULL;
+		newfile = NULL;
+		remove("vipinfo");
+		rename("tempvipinfo", "vipinfo");
+		color(10, "修改成功!\n");
+	}
+	back();
 }

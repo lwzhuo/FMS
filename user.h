@@ -14,4 +14,6 @@ int getVipById(int id, struct vip *);//Œ¥ π”√
 void changevip(struct vip vip, int id);
 struct cart * getvipfilm(int uid);
 int getvipborrowfilmnum(int id);
+int getvipmaxfilmborrownum();
+void changeVipBorrowFilmNum();
 #endif // !_USER_H
