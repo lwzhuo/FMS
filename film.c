@@ -159,7 +159,7 @@ void showFilmList(int start, int end)//显示一个区间内的影片信息
 	}
 	FILE *file = fopen("filmbinary", "rb");
 	printf("序号 id   碟名                 \
-国家 类型 年份          状态 价格   总量 余量 状态\n");
+国家 类型 年份           价格   总量 余量 状态\n");
 	start--;
 	end--;
 	while (start <= end)
@@ -167,11 +167,10 @@ void showFilmList(int start, int end)//显示一个区间内的影片信息
 		num++;
 		fseek(file, FILMSIZE * start, SEEK_SET);
 		fread(&f, sizeof(struct film), 1, file);
-		printf("%-4d %-4d %-20s %-3s %-3s %-13s %-3s \
+		printf("%-4d %-4d %-20s %-3s %-3s %-13s  \
 %-6.2f %-4d %-4d ", num, f.id, f.film_name,
 COUNTRY[f.film_country - '0'], TYPE[f.film_type - '0'],
-YEAR[f.film_year - '0'], IS_BORROW[f.is_borrow - '0'],
-f.film_price, f.film_sum, f.film_left);
+YEAR[f.film_year - '0'],f.film_price, f.film_sum, f.film_left);
 		if (f.is_borrow - '0' == 1)
 			color(10, IS_BORROW[f.is_borrow - '0']);
 		else
@@ -294,14 +293,9 @@ void borrowsinglefilm(struct cart * head, int uid, int fid)
 	struct filmborrow fb;
 	struct vip tempv;
 	struct film tempfilm;
-	/*struct film *tempfilm = NULL;
-	int newfilmleft;*/
 	fread(&vi, sizeof(struct vipinfo), 1, f2);
 	fclose(f2); f2 = NULL;
-	getFilmById(fid, &tempfilm);
-	/*tempfilm = getFilmById(fid, tempfilm);
-	newfilmleft = --tempfilm->film_left;
-	changeFilmLeftNum(fid, newfilmleft);*/
+	//getFilmById(fid, &tempfilm);
 	int vipnum = vi.num, flag = 0, j, x;//i用户数量 flag游标
 	for (j = 0; j < vipnum; j++)
 	{
@@ -419,6 +413,7 @@ void returnall(int uid)
 	struct vipinfo vi;
 	struct filmborrow fb;
 	struct vip tempv;
+	struct film tempfilm;
 	fread(&vi, sizeof(struct vipinfo), 1, f2);
 	fclose(f2); f2 = NULL;
 	int vipnum = vi.num, flag = 0, j, x;//i用户数量 flag游标
@@ -433,8 +428,15 @@ void returnall(int uid)
 				fseek(f, sizeof(struct filmborrow)*(flag + x), SEEK_SET);
 				fread(&fb, sizeof(struct filmborrow), 1, f);
 				if (tempv.id == uid)//匹配用户
-					if (fb.status == 0)//匹配借阅状态
+				{
+					if (fb.status == 0)//匹配借阅状态 找到要归还的影片
+					{
 						fb.status = 1;//修改用户借阅状态
+						getFilmById(fb.film_id, &tempfilm);//影片数目增加
+						tempfilm.film_left++;
+						changeFilm(tempfilm.id, tempfilm);
+					}
+				}
 				fseek(tempf, sizeof(struct filmborrow)*(flag + x), SEEK_SET);
 				fwrite(&fb, sizeof(struct filmborrow), 1, tempf);
 			}
@@ -457,6 +459,7 @@ void retursinglefilm(int uid, int fid)
 	struct vipinfo vi;
 	struct filmborrow fb;
 	struct vip tempv;
+	struct film tempfilm;
 	fread(&vi, sizeof(struct vipinfo), 1, f2);
 	fclose(f2); f2 = NULL;
 	int vipnum = vi.num, flag = 0, j;//i用户数量 flag游标
@@ -472,8 +475,13 @@ void retursinglefilm(int uid, int fid)
 				fread(&fb, sizeof(struct filmborrow), 1, f);
 				if (tempv.id == uid)//匹配用户
 					if (fb.status == 0)//匹配借阅状态
-						if(fb.film_id==fid)//匹配影片id
+						if (fb.film_id == fid)//匹配影片id 找到要归还的影片
+						{
 							fb.status = 1;//修改用户借阅状态
+							getFilmById(fb.film_id, &tempfilm);//影片数目增加
+							tempfilm.film_left++;
+							changeFilm(tempfilm.id, tempfilm);
+						}
 				fseek(tempf, sizeof(struct filmborrow)*(flag + x), SEEK_SET);
 				fwrite(&fb, sizeof(struct filmborrow), 1, tempf);
 			}

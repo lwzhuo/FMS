@@ -186,6 +186,8 @@ void adminpage()
 					scanf("%s %c %c %c %c %f %hhd %hhd",f.film_name,
 						&f.film_country,&f.film_type,&f.film_year,
 						&f.is_borrow,&f.film_price,&f.film_sum,&f.film_left);
+					if (f.film_left == 0)
+						f.is_borrow = '0';
 					insertFilm(f.film_name, f.film_country, f.film_type, f.film_year,
 						f.is_borrow, f.film_price, f.film_sum, f.film_left);
 				}
@@ -545,12 +547,14 @@ void rechargepage()
 void returnpage()
 {
 	char s;
-	int pay, paysum = 0;
+	int pay, paysum, flag;
 	int nowtime = Get_time();//获取当前时间
+	struct cart * c;
 	while (1)
 	{
-		int flag = 1;
-		struct cart * c = getvipfilm(v.id);
+		flag = 1;
+		c = getvipfilm(v.id);
+		paysum = 0;
 		c = c->next;
 		system("cls");
 		printf("您当前借阅了以下影片:\n");
