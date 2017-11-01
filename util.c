@@ -23,6 +23,7 @@ void init()//配置文件，请勿外部调用！ 仅在初始化配置文件时调用
 	vinfo.num = 0;
 	vinfo.singlevipsize = 48;
 	vinfo.nextid = 1;
+	vinfo.MAX_FILM_BORROW_NUM = 5;
 	FILE *f2 = fopen("vipinfo", "wb");
 	fwrite(&vinfo, sizeof(struct vipinfo), 1, f2);
 	fclose(f2);
