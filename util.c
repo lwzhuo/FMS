@@ -38,7 +38,8 @@ char Select()
 }
 int checkselect(int select, char * str)//检查输入是否在所给选项内
 {
-	for (int i = 0; i < strlen(str); i++)
+	int i;
+	for (i = 0; i < strlen(str); i++)
 		if (str[i] == select)
 			return 1;
 	return 0;

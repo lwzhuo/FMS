@@ -165,7 +165,7 @@ void adminpage()
 		printf("\n\n\n\n\n");
 		printf("\t\t\t\t\t1.影片管理\n\n");
 		printf("\t\t\t\t\t2.用户管理\n\n");
-		printf("\t\t\t\t\tq.返回\n\n");
+		printf("\t\t\t\t\tq.退出登录\n\n");
 		s = Select();
 		if (checkselect(s, "12q"))
 		{
