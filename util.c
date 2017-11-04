@@ -72,7 +72,7 @@ int Get_time()
 	time_t lt;
 	lt = time(NULL) / (60 * 60);
 	return lt;
-}   //这是获取当前时间的函数，返回的是离19700.1.1的小时；
+}   //这是获取当前时间的函数，返回的是离19700.1.1的小时;
 
 int disk_rent(long borrow_t1, long back_t2)
 {
